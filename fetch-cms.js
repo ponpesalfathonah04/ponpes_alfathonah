@@ -30,14 +30,14 @@ async function loadLandingPageCMS() {
         document.getElementById('web_ketua_foto').src = convertGDriveUrl(settings.ketua_foto);
       }
       if(document.getElementById('web_ketua_nama')) document.getElementById('web_ketua_nama').innerText = settings.ketua_nama;
-      if(document.getElementById('web_ketua_jabatan')) document.getElementById('web_ketua_jabatan').innerText = settings.ketua_jabatan;
+      if(document.getElementById('web_ketua_jabatan')) document.getElementById('web_ketua_jabatan').innerText = settings.ketua_jabatan || 'Ketua Yayasan';
       if(document.getElementById('web_ketua_sambutan')) document.getElementById('web_ketua_sambutan').innerText = settings.ketua_sambutan;
       
       if(document.getElementById('web_pengasuh_foto') && settings.pengasuh_foto) {
         document.getElementById('web_pengasuh_foto').src = convertGDriveUrl(settings.pengasuh_foto);
       }
       if(document.getElementById('web_pengasuh_nama')) document.getElementById('web_pengasuh_nama').innerText = settings.pengasuh_nama;
-      if(document.getElementById('web_pengasuh_jabatan')) document.getElementById('web_pengasuh_jabatan').innerText = settings.pengasuh_jabatan;
+      if(document.getElementById('web_pengasuh_jabatan')) document.getElementById('web_pengasuh_jabatan').innerText = settings.pengasuh_jabatan || 'Pengasuh Pondok';
       if(document.getElementById('web_pengasuh_sambutan')) document.getElementById('web_pengasuh_sambutan').innerText = settings.pengasuh_sambutan;
       
       if(document.getElementById('web_tentang_teks')) document.getElementById('web_tentang_teks').innerHTML = settings.tentang_teks.replace(/\n/g, '<br>');
@@ -148,6 +148,9 @@ async function loadLandingPageCMS() {
       }
       if(document.getElementById('web_sosmed_instagram') && settings.sosmed_instagram) {
         document.getElementById('web_sosmed_instagram').href = settings.sosmed_instagram;
+      }
+      if(document.getElementById('web_sosmed_tiktok') && settings.tiktok) {
+        document.getElementById('web_sosmed_tiktok').href = settings.tiktok;
       }
       if(document.getElementById('web_sosmed_youtube') && settings.sosmed_youtube) {
         document.getElementById('web_sosmed_youtube').href = settings.sosmed_youtube;
