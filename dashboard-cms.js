@@ -215,6 +215,7 @@ async function loadWebSettings() {
     if (data) {
       // Profil
       document.getElementById('cms_ketua_nama').value = data.ketua_nama || '';
+      document.getElementById('cms_ketua_jabatan').value = data.ketua_jabatan || '';
       document.getElementById('cms_ketua_sambutan').value = data.ketua_sambutan || '';
       if(data.ketua_foto) {
         document.getElementById('preview_ketua_foto').src = data.ketua_foto;
@@ -223,6 +224,7 @@ async function loadWebSettings() {
       }
       
       document.getElementById('cms_pengasuh_nama').value = data.pengasuh_nama || '';
+      document.getElementById('cms_pengasuh_jabatan').value = data.pengasuh_jabatan || '';
       document.getElementById('cms_pengasuh_sambutan').value = data.pengasuh_sambutan || '';
       if(data.pengasuh_foto) {
         document.getElementById('preview_pengasuh_foto').src = data.pengasuh_foto;
@@ -250,6 +252,7 @@ async function loadWebSettings() {
       
       document.getElementById('cms_sosmed_facebook').value = data.sosmed_facebook || '';
       document.getElementById('cms_sosmed_instagram').value = data.sosmed_instagram || '';
+      document.getElementById('cms_sosmed_tiktok').value = data.tiktok || '';
       document.getElementById('cms_sosmed_youtube').value = data.sosmed_youtube || '';
     }
   } catch (err) {
@@ -279,9 +282,11 @@ async function saveCmsProfil(e) {
     
     const payload = {
       ketua_nama: document.getElementById('cms_ketua_nama').value,
+      ketua_jabatan: document.getElementById('cms_ketua_jabatan').value,
       ketua_sambutan: document.getElementById('cms_ketua_sambutan').value,
       ketua_foto: ketuaFotoUrl,
       pengasuh_nama: document.getElementById('cms_pengasuh_nama').value,
+      pengasuh_jabatan: document.getElementById('cms_pengasuh_jabatan').value,
       pengasuh_sambutan: document.getElementById('cms_pengasuh_sambutan').value,
       pengasuh_foto: pengasuhFotoUrl,
       tentang_teks: document.getElementById('cms_tentang_teks').value,
@@ -341,6 +346,7 @@ async function saveCmsPengaturan(e) {
       sedekah_nama: document.getElementById('cms_sedekah_nama').value,
       sosmed_facebook: document.getElementById('cms_sosmed_facebook').value,
       sosmed_instagram: document.getElementById('cms_sosmed_instagram').value,
+      tiktok: document.getElementById('cms_sosmed_tiktok').value,
       sosmed_youtube: document.getElementById('cms_sosmed_youtube').value,
       updated_at: new Date().toISOString()
     };
