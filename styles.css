@@ -177,10 +177,17 @@ ul {
 
 .navbar.scrolled {
   padding: 12px 0;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+}
+
+.navbar.scrolled::before {
+  content: '';
+  position: absolute;
+  inset: 0;
   background: rgba(6, 78, 59, 0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+  z-index: -1;
 }
 
 .navbar .container {
@@ -189,6 +196,7 @@ ul {
   justify-content: space-between;
   max-width: 100%;
   padding: 0 40px;
+  overflow: visible;
 }
 
 .nav-logo {
@@ -230,6 +238,9 @@ ul {
   font-size: 1.05rem;
   line-height: 1.2;
   letter-spacing: 0.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Nav Links */
@@ -883,7 +894,8 @@ ul {
   background-clip: text;
 }
 
-.about-content-full>p {
+.about-content-full p,
+#web_tentang_teks {
   color: var(--gray-600);
   margin-bottom: 20px;
   line-height: 1.8;
@@ -2899,12 +2911,28 @@ ul {
 
   /* Navbar */
   .navbar .container {
-    padding: 0 40px;
+    padding: 0 16px;
+  }
+
+  .nav-logo {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .nav-logo-text {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .nav-hamburger {
+    flex-shrink: 0;
   }
 
   .nav-logo-img {
-    width: 48px;
-    height: 48px;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
   }
 
   .nav-logo-text .name {
@@ -3114,6 +3142,10 @@ ul {
 
   .hero h1 {
     font-size: 2.8rem;
+  }
+  
+  .hero h1 .highlight {
+    display: block;
   }
 
   .hero p {
@@ -4034,4 +4066,14 @@ ul {
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   display: flex;
   align-items: center;
+}
+
+.mobile-only {
+  display: none !important;
+}
+
+@media (max-width: 1024px) {
+  .mobile-only {
+    display: list-item !important;
+  }
 }
