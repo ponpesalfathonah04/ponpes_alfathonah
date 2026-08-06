@@ -240,7 +240,28 @@ function updateUserDisplay(name, role) {
   
   if (nameEl) nameEl.textContent = name;
   if (roleEl) roleEl.textContent = role;
-  if (avatarEl) avatarEl.textContent = name.charAt(0).toUpperCase();
+  
+  const sb = getSupabase();
+  if (sb && avatarEl) {
+    sb.auth.getUser().then(({data: {user}}) => {
+      if (user && user.email) {
+        sb.from('web_pengurus').select('foto_url').eq('email', user.email).single()
+          .then(({data}) => {
+            if (data && data.foto_url) {
+              avatarEl.innerHTML = `<img src="${data.foto_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            } else {
+              avatarEl.textContent = name.charAt(0).toUpperCase();
+            }
+          }).catch(() => {
+            avatarEl.textContent = name.charAt(0).toUpperCase();
+          });
+      } else {
+        avatarEl.textContent = name.charAt(0).toUpperCase();
+      }
+    });
+  } else if (avatarEl) {
+    avatarEl.textContent = name.charAt(0).toUpperCase();
+  }
 }
 
 // ===== DASHBOARD STATISTIK =====
@@ -3698,3 +3719,163 @@ async function deleteBerita(id, judul) {
     showToast('Gagal menghapus berita: ' + err.message, 'error');
   }
 }
+
+// ===== FITUR PROFIL SAYA & GANTI PASSWORD =====
+
+async function openMyProfileModal() {
+  const sb = getSupabase();
+  if(!sb) return;
+
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+
+  document.getElementById('myProfileModalOverlay').classList.add('active');
+  document.getElementById('myProfileForm').reset();
+  document.getElementById('my_profile_foto_url').value = '';
+  document.getElementById('preview_my_profile_foto').style.display = 'none';
+  document.getElementById('preview_my_profile_initial').style.display = 'block';
+  document.getElementById('preview_my_profile_initial').textContent = user.email.charAt(0).toUpperCase();
+
+  // Load data from web_pengurus based on email
+  try {
+    const { data, error } = await sb.from('web_pengurus').select('*').eq('email', user.email).single();
+    
+    if (data) {
+      document.getElementById('my_profile_id').value = data.id || '';
+      document.getElementById('my_profile_nama').value = data.nama || '';
+      document.getElementById('my_profile_nik').value = data.nik || '';
+      document.getElementById('my_profile_jenis_kelamin').value = data.jenis_kelamin || '';
+      document.getElementById('my_profile_status').value = data.status_aktif || 'Aktif';
+      document.getElementById('my_profile_tempat_lahir').value = data.tempat_lahir || '';
+      
+      // format date to YYYY-MM-DD
+      if (data.tanggal_lahir) {
+        document.getElementById('my_profile_tanggal_lahir').value = data.tanggal_lahir.split('T')[0];
+      }
+      
+      document.getElementById('my_profile_jabatan').value = data.jabatan || '';
+      document.getElementById('my_profile_tupoksi').value = data.tupoksi || '';
+      document.getElementById('my_profile_alamat').value = data.alamat || '';
+      
+      if (data.foto_url) {
+        document.getElementById('my_profile_foto_url').value = data.foto_url;
+        document.getElementById('preview_my_profile_foto').src = data.foto_url;
+        document.getElementById('preview_my_profile_foto').style.display = 'block';
+        document.getElementById('preview_my_profile_initial').style.display = 'none';
+      }
+    }
+  } catch(err) {
+    console.log('User belum ada di web_pengurus, form kosong.');
+  }
+}
+
+function closeMyProfileModal() {
+  document.getElementById('myProfileModalOverlay').classList.remove('active');
+}
+
+// Preview foto profil
+document.getElementById('my_profile_foto')?.addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if(file) {
+    const url = URL.createObjectURL(file);
+    document.getElementById('preview_my_profile_foto').src = url;
+    document.getElementById('preview_my_profile_foto').style.display = 'block';
+    document.getElementById('preview_my_profile_initial').style.display = 'none';
+  }
+});
+
+// Upload foto profil
+async function uploadMyProfileFoto(file) {
+  const sb = getSupabase();
+  const ext = file.name.split('.').pop();
+  const fileName = `profile_${Date.now()}.${ext}`;
+  
+  // kita asumsikan bucket 'images' sudah ada
+  const { data, error } = await sb.storage.from('images').upload(fileName, file);
+  if (error) throw error;
+  
+  const { data: publicData } = sb.storage.from('images').getPublicUrl(fileName);
+  return publicData.publicUrl;
+}
+
+document.getElementById('myProfileForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const sb = getSupabase();
+  if(!sb) return;
+
+  const btn = document.getElementById('btnSimpanMyProfile');
+  const oldText = btn.innerHTML;
+  btn.textContent = 'Menyimpan...'; 
+  btn.disabled = true;
+
+  try {
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) throw new Error('Sesi tidak valid. Silakan login ulang.');
+
+    // 1. Cek & Update Password jika diisi
+    const pass = document.getElementById('my_profile_password').value;
+    const confirmPass = document.getElementById('my_profile_password_confirm').value;
+    if (pass || confirmPass) {
+      if (pass !== confirmPass) {
+        throw new Error('Password baru dan konfirmasi tidak cocok!');
+      }
+      if (pass.length < 6) {
+        throw new Error('Password harus minimal 6 karakter!');
+      }
+      const { error: passErr } = await sb.auth.updateUser({ password: pass });
+      if (passErr) throw new Error('Gagal mengganti password: ' + passErr.message);
+    }
+
+    // 2. Upload Foto jika ada file baru
+    const fileInput = document.getElementById('my_profile_foto');
+    let finalFotoUrl = document.getElementById('my_profile_foto_url').value;
+    if (fileInput.files.length > 0) {
+      finalFotoUrl = await uploadMyProfileFoto(fileInput.files[0]);
+    }
+
+    // 3. Upsert data ke web_pengurus
+    const payload = {
+      nama: document.getElementById('my_profile_nama').value.trim(),
+      nik: document.getElementById('my_profile_nik').value.trim(),
+      jenis_kelamin: document.getElementById('my_profile_jenis_kelamin').value,
+      tempat_lahir: document.getElementById('my_profile_tempat_lahir').value.trim(),
+      tanggal_lahir: document.getElementById('my_profile_tanggal_lahir').value,
+      jabatan: document.getElementById('my_profile_jabatan').value.trim(),
+      tupoksi: document.getElementById('my_profile_tupoksi').value.trim(),
+      alamat: document.getElementById('my_profile_alamat').value.trim(),
+      status_aktif: document.getElementById('my_profile_status').value,
+      email: user.email,
+      foto_url: finalFotoUrl,
+      updated_at: new Date().toISOString()
+    };
+
+    const id = document.getElementById('my_profile_id').value;
+    if (id) {
+      // Update
+      const { error } = await sb.from('web_pengurus').update(payload).eq('id', id);
+      if (error) throw error;
+    } else {
+      // Insert
+      const { error } = await sb.from('web_pengurus').insert([payload]);
+      if (error) throw error;
+    }
+
+    showToast('Profil dan pengaturan berhasil disimpan!', 'success');
+    closeMyProfileModal();
+    
+    // Refresh table pengurus jika ada di layar
+    if (typeof loadData === 'function') {
+      loadData('web_pengurus', renderPengurusTable);
+    }
+    
+    // Update sidebar name if changed
+    const nameEl = document.getElementById('sidebarUserName');
+    if (nameEl) nameEl.textContent = payload.nama;
+
+  } catch(err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.innerHTML = oldText;
+    btn.disabled = false;
+  }
+});
