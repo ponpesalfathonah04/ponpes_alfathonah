@@ -1302,22 +1302,26 @@ function renderDynamicRows() {
   const eCon = document.getElementById('pengeluaranContainer');
   
   pCon.innerHTML = currentPemasukan.map((p, i) => `
-    <div style="display:flex; gap:8px; align-items:center; margin-bottom:6px;">
-      <input type="text" placeholder="Sumber Dana" value="${p.sumber}" onchange="updatePemasukan(${i}, 'sumber', this.value)" style="flex:2; padding:8px 10px; border:1px solid var(--gray-300); border-radius:8px; font-size:0.85rem;">
-      <input type="number" placeholder="Rp" value="${p.jumlah}" onchange="updatePemasukan(${i}, 'jumlah', this.value)" style="flex:1; padding:8px 10px; border:1px solid var(--gray-300); border-radius:8px; font-size:0.85rem;">
-      <button type="button" class="btn-action btn-delete" onclick="removePemasukan(${i})" title="Hapus Baris" style="width:34px; height:34px; border-radius:8px; flex-shrink:0;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-      </button>
+    <div class="laporan-dynamic-row">
+      <input type="text" class="laporan-row-text" placeholder="Sumber Dana" value="${(p.sumber || '').replace(/"/g, '&quot;')}" onchange="updatePemasukan(${i}, 'sumber', this.value)">
+      <div class="laporan-row-num-wrap">
+        <input type="number" class="laporan-row-num" placeholder="Rp" value="${p.jumlah}" onchange="updatePemasukan(${i}, 'jumlah', this.value)">
+        <button type="button" class="btn-action btn-delete laporan-row-del" onclick="removePemasukan(${i})" title="Hapus Baris">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        </button>
+      </div>
     </div>
   `).join('');
   
   eCon.innerHTML = currentPengeluaran.map((p, i) => `
-    <div style="display:flex; gap:8px; align-items:center; margin-bottom:6px;">
-      <input type="text" placeholder="Jenis / Keterangan" value="${p.jenis}" onchange="updatePengeluaran(${i}, 'jenis', this.value)" style="flex:2; padding:8px 10px; border:1px solid var(--gray-300); border-radius:8px; font-size:0.85rem;">
-      <input type="number" placeholder="Rp" value="${p.jumlah}" onchange="updatePengeluaran(${i}, 'jumlah', this.value)" style="flex:1; padding:8px 10px; border:1px solid var(--gray-300); border-radius:8px; font-size:0.85rem;">
-      <button type="button" class="btn-action btn-delete" onclick="removePengeluaran(${i})" title="Hapus Baris" style="width:34px; height:34px; border-radius:8px; flex-shrink:0;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-      </button>
+    <div class="laporan-dynamic-row">
+      <input type="text" class="laporan-row-text" placeholder="Jenis / Keterangan" value="${(p.jenis || '').replace(/"/g, '&quot;')}" onchange="updatePengeluaran(${i}, 'jenis', this.value)">
+      <div class="laporan-row-num-wrap">
+        <input type="number" class="laporan-row-num" placeholder="Rp" value="${p.jumlah}" onchange="updatePengeluaran(${i}, 'jumlah', this.value)">
+        <button type="button" class="btn-action btn-delete laporan-row-del" onclick="removePengeluaran(${i})" title="Hapus Baris">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        </button>
+      </div>
     </div>
   `).join('');
 }
@@ -3370,6 +3374,9 @@ document.getElementById('transaksiForm')?.addEventListener('submit', async (e) =
       loadRiwayat(santriId);
     }
     loadDetailTagihan(currentTagihanId);
+    if (typeof loadRiwayatKeuangan === 'function') {
+      loadRiwayatKeuangan();
+    }
   } catch (err) {
     console.error(err);
     showToast('Gagal menyimpan transaksi: ' + (err.message || 'Error database'), 'error');
@@ -3469,6 +3476,9 @@ async function deleteTransaksi(id, santriId) {
     showToast('Transaksi dihapus');
     loadRiwayat(santriId);
     loadDetailTagihan(currentTagihanId);
+    if (typeof loadRiwayatKeuangan === 'function') {
+      loadRiwayatKeuangan();
+    }
   }
 }
 
