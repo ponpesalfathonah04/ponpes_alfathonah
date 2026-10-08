@@ -203,8 +203,56 @@ function showSection(sectionId) {
   }
 }
 
+// ===== CEGAH TOMBOL BACK KELUAR DARI DASHBOARD =====
+let isLoggingOut = false;
+
+function initBackPrevention() {
+  try {
+    window.history.pushState({ inDashboard: true }, document.title, window.location.href);
+  } catch (err) {}
+
+  window.addEventListener('popstate', function (event) {
+    if (isLoggingOut) return;
+
+    // Kunci kembali riwayat history ke dashboard
+    try {
+      window.history.pushState({ inDashboard: true }, document.title, window.location.href);
+    } catch (err) {}
+
+    // 1. Jika ada modal yang sedang aktif/terbuka, tutup modal tersebut
+    const openModals = document.querySelectorAll('.modal-overlay.active, .modal.active');
+    if (openModals.length > 0) {
+      openModals.forEach(m => m.classList.remove('active'));
+      document.body.style.overflow = '';
+      return;
+    }
+
+    // 2. Jika sidebar mobile sedang terbuka, tutup sidebar
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar && sidebar.classList.contains('mobile-open')) {
+      sidebar.classList.remove('mobile-open');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (overlay) overlay.classList.remove('active');
+      return;
+    }
+
+    // 3. Jika sedang berada di tab/section selain dashboard utama, kembali ke ringkasan dashboard
+    const currentSection = document.querySelector('.content-section.active');
+    if (currentSection && currentSection.id !== 'section-dashboard') {
+      showSection('dashboard');
+      return;
+    }
+
+    // 4. Jika sudah di dashboard utama, ingatkan pengguna untuk menggunakan tombol Logout
+    if (typeof showToast === 'function') {
+      showToast('Gunakan tombol Keluar di menu samping untuk logout', 'info');
+    }
+  });
+}
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
+  initBackPrevention();
   checkMobileView();
   
   // Set mobile header date
@@ -4578,11 +4626,18 @@ function exportInventarisExcel() {
 
 // ===== LOGOUT =====
 async function handleLogout(e) {
-  e.preventDefault();
+  if (e) e.preventDefault();
   const ok = await showCustomConfirm('Keluar dari Dashboard', 'Apakah Anda yakin ingin keluar dari akun ini?', { confirmText: 'Ya, Keluar', type: 'logout' });
   if (!ok) return;
+  isLoggingOut = true;
   const sb = getSupabase();
-  if (sb) await sb.auth.signOut();
+  if (sb) {
+    try {
+      await sb.auth.signOut();
+    } catch (err) {
+      console.log('Signout error:', err);
+    }
+  }
   window.location.replace('login.html');
 }
 
