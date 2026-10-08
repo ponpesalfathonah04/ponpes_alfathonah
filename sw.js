@@ -1,5 +1,5 @@
 // sw.js - Service Worker for PWA
-const CACHE_NAME = 'alfathonah-cache-v4';
+const CACHE_NAME = 'alfathonah-cache-v5';
 const ASSETS_TO_CACHE = [
   './',
   './login.html',
