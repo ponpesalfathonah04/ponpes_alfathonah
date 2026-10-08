@@ -3,7 +3,8 @@
   "short_name": "Al-Fathonah",
   "description": "Sistem Informasi & Manajemen Keuangan Pondok Pesantren Al-Fathonah",
   "start_url": "login.html",
-  "display": "standalone",
+  "scope": "./",
+  "display": "fullscreen",
   "orientation": "portrait",
   "background_color": "#065F46",
   "theme_color": "#065F46",
@@ -12,13 +13,19 @@
       "src": "img/logo.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "img/logo.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "img/logo-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
