@@ -189,6 +189,7 @@ function setupImagePreview(inputId, previewId, hiddenUrlId) {
 // Panggil setup untuk semua form CMS
 document.addEventListener('DOMContentLoaded', () => {
   setupImagePreview('cms_ketua_foto', 'preview_ketua_foto', 'cms_ketua_foto_url');
+  setupImagePreview('cms_wakil_ketua_foto', 'preview_wakil_ketua_foto', 'cms_wakil_ketua_foto_url');
   setupImagePreview('cms_pengasuh_foto', 'preview_pengasuh_foto', 'cms_pengasuh_foto_url');
   setupImagePreview('sarana_foto', 'preview_sarana_foto', 'sarana_foto_url');
   setupImagePreview('ekstra_foto', 'preview_ekstra_foto', 'ekstra_foto_url');
@@ -223,6 +224,17 @@ async function loadWebSettings() {
         document.getElementById('preview_ketua_foto').src = data.ketua_foto;
         document.getElementById('preview_ketua_foto').style.display = 'block';
         document.getElementById('cms_ketua_foto_url').value = data.ketua_foto;
+      }
+
+      // Wakil Ketua
+      document.getElementById('cms_wakil_ketua_nama').value = data.wakil_ketua_nama || localStorage.getItem('cms_wakil_ketua_nama') || 'H. Muhammad Syarif, S.Ag.';
+      document.getElementById('cms_wakil_ketua_jabatan').value = data.wakil_ketua_jabatan || localStorage.getItem('cms_wakil_ketua_jabatan') || 'Wakil Ketua Yayasan';
+      document.getElementById('cms_wakil_ketua_sambutan').value = data.wakil_ketua_sambutan || localStorage.getItem('cms_wakil_ketua_sambutan') || 'Berkomitmen mendampingi dan mewujudkan tata kelola pendidikan pesantren yang profesional, amanah, serta berlandaskan nilai-nilai Al-Qur\'an dan Sunnah.';
+      const wakilFoto = data.wakil_ketua_foto || localStorage.getItem('cms_wakil_ketua_foto') || 'img/wakil_ketua.jpeg';
+      if(wakilFoto) {
+        document.getElementById('preview_wakil_ketua_foto').src = wakilFoto;
+        document.getElementById('preview_wakil_ketua_foto').style.display = 'block';
+        document.getElementById('cms_wakil_ketua_foto_url').value = wakilFoto;
       }
       
       document.getElementById('cms_pengasuh_nama').value = data.pengasuh_nama || '';
@@ -275,18 +287,38 @@ async function saveCmsProfil(e) {
     if (inputKetua.files.length > 0) {
       ketuaFotoUrl = await uploadToSupabase(inputKetua, 'Profil');
     }
+
+    let wakilFotoUrl = document.getElementById('cms_wakil_ketua_foto_url').value;
+    const inputWakil = document.getElementById('cms_wakil_ketua_foto');
+    if (inputWakil.files.length > 0) {
+      wakilFotoUrl = await uploadToSupabase(inputWakil, 'Profil');
+    }
     
     let pengasuhFotoUrl = document.getElementById('cms_pengasuh_foto_url').value;
     const inputPengasuh = document.getElementById('cms_pengasuh_foto');
     if (inputPengasuh.files.length > 0) {
       pengasuhFotoUrl = await uploadToSupabase(inputPengasuh, 'Profil');
     }
+
+    const wakilNamaVal = document.getElementById('cms_wakil_ketua_nama').value;
+    const wakilJabatanVal = document.getElementById('cms_wakil_ketua_jabatan').value;
+    const wakilSambutanVal = document.getElementById('cms_wakil_ketua_sambutan').value;
+
+    // Simpan ke localStorage untuk instan cache & offline fallback
+    localStorage.setItem('cms_wakil_ketua_nama', wakilNamaVal);
+    localStorage.setItem('cms_wakil_ketua_jabatan', wakilJabatanVal);
+    localStorage.setItem('cms_wakil_ketua_sambutan', wakilSambutanVal);
+    if(wakilFotoUrl) localStorage.setItem('cms_wakil_ketua_foto', wakilFotoUrl);
     
     const payload = {
       ketua_nama: document.getElementById('cms_ketua_nama').value,
       ketua_jabatan: document.getElementById('cms_ketua_jabatan').value,
       ketua_sambutan: document.getElementById('cms_ketua_sambutan').value,
       ketua_foto: ketuaFotoUrl,
+      wakil_ketua_nama: wakilNamaVal,
+      wakil_ketua_jabatan: wakilJabatanVal,
+      wakil_ketua_sambutan: wakilSambutanVal,
+      wakil_ketua_foto: wakilFotoUrl,
       pengasuh_nama: document.getElementById('cms_pengasuh_nama').value,
       pengasuh_jabatan: document.getElementById('cms_pengasuh_jabatan').value,
       pengasuh_sambutan: document.getElementById('cms_pengasuh_sambutan').value,
@@ -295,7 +327,20 @@ async function saveCmsProfil(e) {
       updated_at: new Date().toISOString()
     };
     
-    const { error } = await getSupabase().from('web_settings').update(payload).eq('id', 1);
+    let { error } = await getSupabase().from('web_settings').update(payload).eq('id', 1);
+    if (error && error.message && (error.message.includes('wakil_ketua') || error.code === 'PGRST204' || error.message.includes('column'))) {
+      // Jika kolom wakil_ketua belum ada di tabel Supabase
+      console.warn('Kolom wakil_ketua belum ada di web_settings Supabase, fallback simpan field lainnya dan cache lokal:', error);
+      const fallbackPayload = { ...payload };
+      delete fallbackPayload.wakil_ketua_nama;
+      delete fallbackPayload.wakil_ketua_jabatan;
+      delete fallbackPayload.wakil_ketua_sambutan;
+      delete fallbackPayload.wakil_ketua_foto;
+      const { error: errFallback } = await getSupabase().from('web_settings').update(fallbackPayload).eq('id', 1);
+      if(errFallback) throw errFallback;
+      showCustomAlert('Berhasil Tersimpan', 'Data Profil & Sambutan berhasil disimpan (Data Wakil Ketua tersimpan di cache web. Jalankan script add-wakil-ketua-columns.sql di Supabase untuk sinkronisasi database permanen).', 'success');
+      return;
+    }
     if(error) throw error;
     showCustomAlert('Berhasil', 'Data Profil & Sambutan berhasil disimpan!', 'success');
   } catch(err) {
