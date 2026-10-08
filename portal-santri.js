@@ -53,6 +53,49 @@
     }
   }
 
+  // Lookup cache untuk master_kelas
+  let portalKelasMap = {};
+
+  // Safely format kelas/jenjang - NEVER show raw UUID
+  function formatKelasSantri(s) {
+    if (!s) return '-';
+    if (s.is_lulus) return 'Alumni / Lulus';
+    // 1. Cek dari join master_kelas
+    if (s.master_kelas && s.master_kelas.nama_kelas) return s.master_kelas.nama_kelas;
+    // 2. Cek dari cache portalKelasMap
+    if (s.kelas_id && portalKelasMap[s.kelas_id]) return portalKelasMap[s.kelas_id];
+    // 3. Cek window.allMasterKelas (dari dashboard jika tersedia)
+    if (s.kelas_id && window.allMasterKelas && Array.isArray(window.allMasterKelas)) {
+      const found = window.allMasterKelas.find(k => k.id === s.kelas_id);
+      if (found && found.nama_kelas) return found.nama_kelas;
+    }
+    // 4. Jika kelas_id bukan UUID (mungkin nama langsung), tampilkan
+    if (s.kelas_id && !s.kelas_id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-/i)) return s.kelas_id;
+    // 5. Fallback: jangan pernah tampilkan UUID mentah
+    return s.kelas_id ? 'Kelas Terdaftar' : '-';
+  }
+
+  // Fetch master_kelas dan bangun lookup map
+  async function enrichSantriWithKelas(santriList) {
+    try {
+      const sb = getClient();
+      if (!sb) return;
+      // Kumpulkan semua kelas_id unik yang belum ada di cache
+      const kelasIds = [...new Set(santriList.filter(s => s.kelas_id && !portalKelasMap[s.kelas_id]).map(s => s.kelas_id))];
+      if (kelasIds.length === 0) return;
+      // Fetch master_kelas berdasarkan ID
+      const { data: kelasData } = await sb
+        .from('master_kelas')
+        .select('id, nama_kelas')
+        .in('id', kelasIds);
+      if (kelasData && kelasData.length > 0) {
+        kelasData.forEach(k => { portalKelasMap[k.id] = k.nama_kelas; });
+      }
+    } catch (e) {
+      console.warn('Portal: Gagal fetch master_kelas, menggunakan fallback.', e);
+    }
+  }
+
   // Toggle Password Visibility
   window.togglePortalKodeVisibility = function () {
     const input = document.getElementById('portalKode');
@@ -277,6 +320,9 @@
         return;
       }
 
+      // Enrich santri data dengan nama kelas (bypass RLS issue)
+      await enrichSantriWithKelas(santriList);
+
       if (santriList.length === 1) {
         // Tepat 1 santri ditemukan, langsung buka detail
         await loadAndShowStudentDetail(santriList[0]);
@@ -323,7 +369,7 @@
     `;
 
     list.forEach(s => {
-      const kls = s.master_kelas ? s.master_kelas.nama_kelas : (s.kelas_id || 'Kelas Belum Ditentukan');
+      const kls = formatKelasSantri(s);
       const jk = s.jenis_kelamin === 'Laki-laki' ? 'Laki-laki' : 'Perempuan';
       const initial = (s.nama || 'S').charAt(0).toUpperCase();
 
@@ -436,7 +482,7 @@
       `;
     }
 
-    const kls = student.master_kelas ? student.master_kelas.nama_kelas : (student.kelas_id || '-');
+    const kls = formatKelasSantri(student);
     const statusMondok = student.status_mondok || 'Aktif';
 
     if (headerTags) {
@@ -915,7 +961,7 @@
 
   // HTML Biodata Santri
   function renderBiodataHtml(s) {
-    const kls = s.master_kelas ? s.master_kelas.nama_kelas : (s.kelas_id || '-');
+    const kls = formatKelasSantri(s);
     const jk = s.jenis_kelamin === 'Laki-laki' ? 'Laki-laki (Ikhwan)' : 'Perempuan (Akhwat)';
 
     return `
@@ -1046,7 +1092,7 @@
     }
 
     const s = currentActiveStudent;
-    const kls = s.master_kelas ? s.master_kelas.nama_kelas : (s.kelas_id || '-');
+    const kls = formatKelasSantri(s);
 
     // Ringkasan Uang Jajan
     let jajanMasuk = 0, jajanKeluar = 0;
