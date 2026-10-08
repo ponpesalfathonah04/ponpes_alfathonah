@@ -16,7 +16,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <script>
     // Jika aplikasi dibuka sebagai PWA Android / standalone app, langsung arahkan ke login.html
-    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+    // Kecuali jika ada parameter ?web=true (dari tombol "Kembali ke Halaman Web Profil")
+    if ((window.matchMedia('(display-mode: standalone)').matches || window.matchMedia('(display-mode: fullscreen)').matches || window.navigator.standalone === true) && !window.location.search.includes('web=true')) {
       window.location.replace('login.html');
     }
     // Daftarkan service worker
