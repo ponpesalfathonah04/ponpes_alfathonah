@@ -99,6 +99,20 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
+// ===== FOOTER SOSIAL MEDIA CLICK HANDLER =====
+document.querySelectorAll('.footer-social-link').forEach(link => {
+  link.addEventListener('click', function (e) {
+    const href = this.getAttribute('href');
+    if (!href || href === '#' || href === 'javascript:void(0)' || href.startsWith('javascript:')) {
+      e.preventDefault();
+      const platform = this.getAttribute('aria-label') || 'Media Sosial';
+      if (typeof showToast === 'function') {
+        showToast(`Tautan ${platform} Pondok Pesantren Al-Fathonah sedang disiapkan oleh pengurus.`, 'info');
+      }
+    }
+  });
+});
+
 // ===== DROPDOWN =====
 const navDropdowns = document.querySelectorAll('.nav-dropdown');
 
