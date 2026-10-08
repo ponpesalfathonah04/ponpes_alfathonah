@@ -691,8 +691,10 @@
 
     // ===== KEMBALI KE WEB PROFIL (FIX UNTUK PWA FULLSCREEN) =====
     function handleBackToWeb(e) {
-      e.preventDefault();
-      // Navigasi ke index.html dengan parameter ?web=true agar bypass auto-redirect PWA
+      if (e) e.preventDefault();
+      try {
+        sessionStorage.setItem('allowLanding', 'true');
+      } catch (err) {}
       window.location.href = 'index.html?web=true';
     }
 
