@@ -50,7 +50,7 @@ async function loadRiwayatKeuangan() {
     const tahun = document.getElementById('filterTahunPemasukan') ? document.getElementById('filterTahunPemasukan').value : '';
     const jenisFilter = document.getElementById('filterJenisRiwayat') ? document.getElementById('filterJenisRiwayat').value : '';
     
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#9CA3AF;">Memuat seluruh riwayat transaksi (masuk & keluar)...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px; color:#9CA3AF;">Memuat seluruh riwayat transaksi (masuk & keluar)...</td></tr>';
     
     // 1. Fetch pembayaran_bulanan (SPP, Infaq, Jajan, Tagihan Lainnya)
     let queryBayar = sb
@@ -162,7 +162,7 @@ function renderRiwayatKeuanganTable() {
     const statCount = document.getElementById('statRiwayatTotalTransaksi');
     
     if (allRiwayatKeuangan.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#9CA3AF;">Belum ada catatan transaksi pada filter ini.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px; color:#9CA3AF;">Belum ada catatan transaksi pada filter ini.</td></tr>';
         if(statTotalPemasukan) statTotalPemasukan.textContent = 'Rp 0';
         if(statTotalPengeluaran) statTotalPengeluaran.textContent = 'Rp 0';
         if(statSisaSaldo) statSisaSaldo.textContent = 'Rp 0';
@@ -205,12 +205,17 @@ function renderRiwayatKeuanganTable() {
                 <td style="text-align:center;">${i + 1}</td>
                 <td>${formatTanggalRiwayat(t.tgl_bayar)}</td>
                 <td style="font-weight: 600;">${santriNama}</td>
-                <td>${jenisBadge}</td>
+                <td style="text-align:center;">${jenisBadge}</td>
                 <td style="font-weight: bold; color: ${nominalColor};">${nominalPrefix}${rPemasukanRupiah(nominal)}</td>
-                <td><span style="background: #F3F4F6; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">${t.metode || 'Tunai'}</span></td>
+                <td style="text-align:center;"><span style="background: #F3F4F6; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">${t.metode || 'Tunai'}</span></td>
                 <td>
                     <div style="font-size: 0.85rem; font-weight: 500;">${tagihanKat}</div>
                     ${ket}
+                </td>
+                <td style="text-align:center;">
+                    <button type="button" class="btn-action btn-delete" onclick="deleteRiwayatItem('${t.id}')" title="Hapus Transaksi" style="width:30px; height:30px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; margin:0 auto;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
                 </td>
             </tr>
         `;
@@ -227,6 +232,51 @@ function renderRiwayatKeuanganTable() {
     }
     if(statCount) statCount.textContent = `${allRiwayatKeuangan.length} Transaksi`;
 }
+
+// Hapus transaksi langsung dari tabel Semua Riwayat Transaksi
+async function deleteRiwayatItem(id) {
+    if (!id) return;
+    const ok = await showCustomConfirm(
+        'Hapus Transaksi', 
+        'Apakah Anda yakin ingin menghapus catatan transaksi ini? Saldo dan riwayat akan otomatis disinkronkan.',
+        { confirmText: 'Ya, Hapus', type: 'danger' }
+    );
+    if (!ok) return;
+
+    const sb = getSupabase();
+    if (!sb) return;
+
+    try {
+        if (String(id).startsWith('belanja_')) {
+            const rawId = String(id).replace('belanja_', '');
+            const { error } = await sb.from('transaksi_belanja').delete().eq('id', rawId);
+            if (error) throw error;
+        } else {
+            const { error } = await sb.from('pembayaran_bulanan').delete().eq('id', id);
+            if (error) throw error;
+        }
+
+        if (typeof showToast === 'function') {
+            showToast('Transaksi berhasil dihapus dari sistem', 'success');
+        }
+        
+        // Refresh tabel riwayat
+        loadRiwayatKeuangan();
+
+        // Refresh modul terkait jika sedang aktif
+        if (typeof loadTransaksiBelanja === 'function') loadTransaksiBelanja();
+        if (typeof loadTagihan === 'function') loadTagihan();
+        if (typeof currentTagihanId !== 'undefined' && currentTagihanId && typeof loadDetailTagihan === 'function') {
+            loadDetailTagihan(currentTagihanId);
+        }
+    } catch (err) {
+        console.error('Error delete riwayat item:', err);
+        if (typeof showToast === 'function') {
+            showToast('Gagal menghapus transaksi: ' + (err.message || 'Error database'), 'error');
+        }
+    }
+}
+window.deleteRiwayatItem = deleteRiwayatItem;
 
 function resetFilterRiwayat() {
     const tglEl = document.getElementById('filterTglPemasukan');
