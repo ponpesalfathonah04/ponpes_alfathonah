@@ -3,21 +3,40 @@
 let allRiwayatKeuangan = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Set default filter tanggal ke hari ini
-    document.getElementById('filterTglPemasukan').value = new Date().toISOString().split('T')[0];
+    // Default: kosongkan filter tanggal spesifik agar menampilkan seluruh riwayat
+    const tglEl = document.getElementById('filterTglPemasukan');
+    if (tglEl) tglEl.value = '';
+    
+    // Set default tahun jika ada
+    const thnEl = document.getElementById('filterTahunPemasukan');
+    if (thnEl && !thnEl.value) {
+        thnEl.value = new Date().getFullYear().toString();
+    }
     
     // Tunggu sampai Supabase client siap
     setTimeout(() => {
         if (typeof getSupabase !== 'undefined' && getSupabase()) {
-            loadRiwayatPemasukan();
+            loadRiwayatKeuangan();
         }
-    }, 1500);
+    }, 1200);
 });
 
 // Format Rupiah fallback
 function rPemasukanRupiah(angka) {
     if (typeof formatRupiah === 'function') return formatRupiah(angka);
-    return 'Rp ' + Number(angka).toLocaleString('id-ID');
+    return 'Rp ' + Number(angka || 0).toLocaleString('id-ID');
+}
+
+// Menghitung tanggal awal dan akhir bulan secara akurat (mencegah bug tanggal 31 Februari)
+function getMonthDateRange(year, monthStr) {
+    const y = parseInt(year, 10) || new Date().getFullYear();
+    const m = parseInt(monthStr, 10);
+    const lastDay = new Date(y, m, 0).getDate();
+    const mm = String(m).padStart(2, '0');
+    return {
+        start: `${y}-${mm}-01`,
+        end: `${y}-${mm}-${String(lastDay).padStart(2, '0')}`
+    };
 }
 
 async function loadRiwayatKeuangan() {
@@ -26,14 +45,14 @@ async function loadRiwayatKeuangan() {
     const tbody = document.getElementById('riwayatPemasukanTableBody');
     if (!tbody) return;
     
-    const tgl = document.getElementById('filterTglPemasukan').value;
-    const bulan = document.getElementById('filterBulanPemasukan').value;
-    const tahun = document.getElementById('filterTahunPemasukan').value;
+    const tgl = document.getElementById('filterTglPemasukan') ? document.getElementById('filterTglPemasukan').value : '';
+    const bulan = document.getElementById('filterBulanPemasukan') ? document.getElementById('filterBulanPemasukan').value : '';
+    const tahun = document.getElementById('filterTahunPemasukan') ? document.getElementById('filterTahunPemasukan').value : '';
     const jenisFilter = document.getElementById('filterJenisRiwayat') ? document.getElementById('filterJenisRiwayat').value : '';
     
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#9CA3AF;">Memuat seluruh riwayat transaksi...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#9CA3AF;">Memuat seluruh riwayat transaksi (masuk & keluar)...</td></tr>';
     
-    // 1. Fetch pembayaran_bulanan (SPP, Infaq, Jajan, dll)
+    // 1. Fetch pembayaran_bulanan (SPP, Infaq, Jajan, Tagihan Lainnya)
     let queryBayar = sb
         .from('pembayaran_bulanan')
         .select(`
@@ -41,21 +60,27 @@ async function loadRiwayatKeuangan() {
             data_induk_santri ( nama, nis ),
             tagihan_bulanan ( * )
         `)
-        .order('tgl_bayar', { ascending: false });
+        .order('tgl_bayar', { ascending: false })
+        .limit(5000);
 
-    if (jenisFilter) {
-        queryBayar = queryBayar.eq('jenis_transaksi', jenisFilter);
+    if (jenisFilter === 'Pemasukan') {
+        queryBayar = queryBayar.or('jenis_transaksi.eq.Pemasukan,jenis_transaksi.is.null');
+    } else if (jenisFilter === 'Pengeluaran') {
+        queryBayar = queryBayar.eq('jenis_transaksi', 'Pengeluaran');
     }
+
     if (tgl) {
         queryBayar = queryBayar.eq('tgl_bayar', tgl);
     } else {
         if (tahun && bulan) {
-            queryBayar = queryBayar.gte('tgl_bayar', `${tahun}-${bulan}-01`).lte('tgl_bayar', `${tahun}-${bulan}-31`);
+            const range = getMonthDateRange(tahun, bulan);
+            queryBayar = queryBayar.gte('tgl_bayar', range.start).lte('tgl_bayar', range.end);
         } else if (tahun) {
             queryBayar = queryBayar.gte('tgl_bayar', `${tahun}-01-01`).lte('tgl_bayar', `${tahun}-12-31`);
         } else if (bulan) {
             const y = new Date().getFullYear();
-            queryBayar = queryBayar.gte('tgl_bayar', `${y}-${bulan}-01`).lte('tgl_bayar', `${y}-${bulan}-31`);
+            const range = getMonthDateRange(y, bulan);
+            queryBayar = queryBayar.gte('tgl_bayar', range.start).lte('tgl_bayar', range.end);
         }
     }
 
@@ -64,7 +89,7 @@ async function loadRiwayatKeuangan() {
         console.error('Error load pembayaran_bulanan:', errorBayar);
     }
 
-    // 2. Fetch transaksi_belanja (Belanja Operasional Pondok - Jenis Pengeluaran)
+    // 2. Fetch transaksi_belanja (Belanja & Pengeluaran Operasional Pondok)
     let belanjaRows = [];
     if (jenisFilter !== 'Pemasukan') {
         let queryBelanja = sb
@@ -73,18 +98,21 @@ async function loadRiwayatKeuangan() {
                 id, tanggal, item_nama, total_harga, keterangan, created_at,
                 kategori_belanja ( nama_kategori )
             `)
-            .order('tanggal', { ascending: false });
+            .order('tanggal', { ascending: false })
+            .limit(5000);
 
         if (tgl) {
             queryBelanja = queryBelanja.eq('tanggal', tgl);
         } else {
             if (tahun && bulan) {
-                queryBelanja = queryBelanja.gte('tanggal', `${tahun}-${bulan}-01`).lte('tanggal', `${tahun}-${bulan}-31`);
+                const range = getMonthDateRange(tahun, bulan);
+                queryBelanja = queryBelanja.gte('tanggal', range.start).lte('tanggal', range.end);
             } else if (tahun) {
                 queryBelanja = queryBelanja.gte('tanggal', `${tahun}-01-01`).lte('tanggal', `${tahun}-12-31`);
             } else if (bulan) {
                 const y = new Date().getFullYear();
-                queryBelanja = queryBelanja.gte('tanggal', `${y}-${bulan}-01`).lte('tanggal', `${y}-${bulan}-31`);
+                const range = getMonthDateRange(y, bulan);
+                queryBelanja = queryBelanja.gte('tanggal', range.start).lte('tanggal', range.end);
             }
         }
 
@@ -106,10 +134,12 @@ async function loadRiwayatKeuangan() {
                 },
                 created_at: b.created_at
             }));
+        } else if (errorBelanja) {
+            console.error('Error load transaksi_belanja:', errorBelanja);
         }
     }
 
-    // Gabungkan seluruh transaksi dan urutkan berdasarkan tanggal terbaru
+    // Gabungkan seluruh transaksi (pembayaran_bulanan + transaksi_belanja)
     const combined = [...(dataBayar || []), ...belanjaRows];
     combined.sort((a, b) => {
         const da = new Date(a.tgl_bayar || a.created_at);
@@ -132,7 +162,7 @@ function renderRiwayatKeuanganTable() {
     const statCount = document.getElementById('statRiwayatTotalTransaksi');
     
     if (allRiwayatKeuangan.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#9CA3AF;">Tidak ada transaksi pada filter ini.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#9CA3AF;">Belum ada catatan transaksi pada filter ini.</td></tr>';
         if(statTotalPemasukan) statTotalPemasukan.textContent = 'Rp 0';
         if(statTotalPengeluaran) statTotalPengeluaran.textContent = 'Rp 0';
         if(statSisaSaldo) statSisaSaldo.textContent = 'Rp 0';
@@ -145,8 +175,8 @@ function renderRiwayatKeuanganTable() {
     let totalPengeluaran = 0;
     
     allRiwayatKeuangan.forEach((t, i) => {
-        const nominal = Number(t.nominal);
-        const isPemasukan = t.jenis_transaksi === 'Pemasukan';
+        const nominal = Number(t.nominal || 0);
+        const isPemasukan = !t.jenis_transaksi || t.jenis_transaksi === 'Pemasukan';
         
         if (isPemasukan) {
             totalPemasukan += nominal;
@@ -164,11 +194,11 @@ function renderRiwayatKeuanganTable() {
         
         // Badge jenis transaksi
         const jenisBadge = isPemasukan 
-            ? `<span style="background: #D1FAE5; color: #047857; padding: 3px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 600;">Pemasukan</span>`
-            : `<span style="background: #FEE2E2; color: #B91C1C; padding: 3px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 600;">Pengeluaran</span>`;
+            ? `<span style="background: #D1FAE5; color: #047857; padding: 3px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 700;">Masuk (+)</span>`
+            : `<span style="background: #FEE2E2; color: #B91C1C; padding: 3px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 700;">Keluar (-)</span>`;
         
         const nominalColor = isPemasukan ? '#047857' : '#DC2626';
-        const nominalPrefix = isPemasukan ? '+' : '-';
+        const nominalPrefix = isPemasukan ? '+ ' : '- ';
         
         html += `
             <tr>
@@ -176,7 +206,7 @@ function renderRiwayatKeuanganTable() {
                 <td>${formatTanggalRiwayat(t.tgl_bayar)}</td>
                 <td style="font-weight: 600;">${santriNama}</td>
                 <td>${jenisBadge}</td>
-                <td style="font-weight: bold; color: ${nominalColor};">${nominalPrefix} ${rPemasukanRupiah(nominal)}</td>
+                <td style="font-weight: bold; color: ${nominalColor};">${nominalPrefix}${rPemasukanRupiah(nominal)}</td>
                 <td><span style="background: #F3F4F6; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">${t.metode || 'Tunai'}</span></td>
                 <td>
                     <div style="font-size: 0.85rem; font-weight: 500;">${tagihanKat}</div>
@@ -190,9 +220,28 @@ function renderRiwayatKeuanganTable() {
     
     if(statTotalPemasukan) statTotalPemasukan.textContent = rPemasukanRupiah(totalPemasukan);
     if(statTotalPengeluaran) statTotalPengeluaran.textContent = rPemasukanRupiah(totalPengeluaran);
-    if(statSisaSaldo) statSisaSaldo.textContent = rPemasukanRupiah(totalPemasukan - totalPengeluaran);
+    if(statSisaSaldo) {
+        const saldoBersih = totalPemasukan - totalPengeluaran;
+        statSisaSaldo.textContent = (saldoBersih < 0 ? '- ' : '') + rPemasukanRupiah(Math.abs(saldoBersih));
+        statSisaSaldo.style.color = saldoBersih >= 0 ? '#10B981' : '#EF4444';
+    }
     if(statCount) statCount.textContent = `${allRiwayatKeuangan.length} Transaksi`;
 }
+
+function resetFilterRiwayat() {
+    const tglEl = document.getElementById('filterTglPemasukan');
+    const blnEl = document.getElementById('filterBulanPemasukan');
+    const thnEl = document.getElementById('filterTahunPemasukan');
+    const jnsEl = document.getElementById('filterJenisRiwayat');
+    
+    if (tglEl) tglEl.value = '';
+    if (blnEl) blnEl.value = '';
+    if (jnsEl) jnsEl.value = '';
+    if (thnEl) thnEl.value = new Date().getFullYear().toString();
+    
+    loadRiwayatKeuangan();
+}
+window.resetFilterRiwayat = resetFilterRiwayat;
 
 function formatTanggalRiwayat(tglStr) {
     if (!tglStr) return '-';
@@ -204,42 +253,44 @@ function formatTanggalRiwayat(tglStr) {
 function printRiwayatPemasukan() {
     if (allRiwayatKeuangan.length === 0) {
         if (typeof showToast === 'function') {
-            showToast('Tidak ada data untuk dicetak.', 'warning');
+            showToast('Tidak ada data transaksi untuk dicetak.', 'warning');
         }
         return;
     }
     
-    const tgl = document.getElementById('filterTglPemasukan').value;
-    const bulan = document.getElementById('filterBulanPemasukan').options[document.getElementById('filterBulanPemasukan').selectedIndex].text;
-    const tahun = document.getElementById('filterTahunPemasukan').value;
+    const tgl = document.getElementById('filterTglPemasukan') ? document.getElementById('filterTglPemasukan').value : '';
+    const blnEl = document.getElementById('filterBulanPemasukan');
+    const bulan = blnEl ? blnEl.options[blnEl.selectedIndex].text : 'Semua Bulan';
+    const thnEl = document.getElementById('filterTahunPemasukan');
+    const tahun = thnEl ? thnEl.value : 'Semua Tahun';
     const jenisFilter = document.getElementById('filterJenisRiwayat') ? document.getElementById('filterJenisRiwayat').value : '';
     
     let infoPeriode = '';
-    if(tgl) {
+    if (tgl) {
         infoPeriode = `Tanggal: ${formatTanggalRiwayat(tgl)}`;
     } else {
-        infoPeriode = `Periode: ${bulan !== 'Semua Bulan' ? bulan : ''} ${tahun !== 'Semua Tahun' ? tahun : ''}`;
+        infoPeriode = `Periode: ${bulan !== 'Semua Bulan' ? bulan : ''} ${tahun !== 'Semua Tahun' ? tahun : ''}`.trim() || 'Semua Periode';
     }
     
-    let infoJenis = jenisFilter ? `Jenis: ${jenisFilter}` : 'Jenis: Semua (Pemasukan & Pengeluaran)';
+    let infoJenis = jenisFilter ? `Jenis: ${jenisFilter}` : 'Jenis: Seluruh Transaksi (Pemasukan & Pengeluaran)';
 
     let totalPemasukan = 0;
     let totalPengeluaran = 0;
     
     let thead = `<tr>
-        <th style="border:1px solid #000; padding:8px;">No</th>
+        <th style="border:1px solid #000; padding:8px; text-align:center;">No</th>
         <th style="border:1px solid #000; padding:8px;">Tanggal</th>
-        <th style="border:1px solid #000; padding:8px;">Nama Santri</th>
-        <th style="border:1px solid #000; padding:8px;">Jenis</th>
+        <th style="border:1px solid #000; padding:8px;">Nama / Pihak</th>
+        <th style="border:1px solid #000; padding:8px; text-align:center;">Jenis</th>
         <th style="border:1px solid #000; padding:8px;">Kategori / Keterangan</th>
-        <th style="border:1px solid #000; padding:8px;">Metode</th>
-        <th style="border:1px solid #000; padding:8px;">Nominal</th>
+        <th style="border:1px solid #000; padding:8px; text-align:center;">Metode</th>
+        <th style="border:1px solid #000; padding:8px; text-align:right;">Nominal</th>
     </tr>`;
     
     let tbody = '';
     allRiwayatKeuangan.forEach((t, i) => {
-        const nominal = Number(t.nominal);
-        const isPemasukan = t.jenis_transaksi === 'Pemasukan';
+        const nominal = Number(t.nominal || 0);
+        const isPemasukan = !t.jenis_transaksi || t.jenis_transaksi === 'Pemasukan';
         
         if (isPemasukan) {
             totalPemasukan += nominal;
@@ -249,89 +300,57 @@ function printRiwayatPemasukan() {
         
         const santriNama = t.data_induk_santri ? t.data_induk_santri.nama : '-';
         const namaKat = (t.tagihan_bulanan && t.tagihan_bulanan.kategori === 'Lainnya' && t.tagihan_bulanan.keterangan)
-            ? `${t.tagihan_bulanan.keterangan} (Lainnya)`
+            ? t.tagihan_bulanan.keterangan
             : (t.tagihan_bulanan ? t.tagihan_bulanan.kategori : '-');
-        const tagihanKat = namaKat;
-        
+        const periodeInfo = (t.tagihan_bulanan && t.tagihan_bulanan.bulan && t.tagihan_bulanan.tahun) ? ` (${t.tagihan_bulanan.bulan} ${t.tagihan_bulanan.tahun})` : '';
+        const tagihanKat = t.tagihan_bulanan ? `${namaKat}${periodeInfo}` : '-';
+        const ket = t.keterangan ? ` - ${t.keterangan}` : '';
+        const jenisLabel = isPemasukan ? 'Pemasukan' : 'Pengeluaran';
+        const prefix = isPemasukan ? '+ ' : '- ';
+
         tbody += `<tr>
-            <td style="border:1px solid #000; padding:8px; text-align:center;">${i+1}</td>
-            <td style="border:1px solid #000; padding:8px; text-align:center;">${formatTanggalRiwayat(t.tgl_bayar)}</td>
+            <td style="border:1px solid #000; padding:8px; text-align:center;">${i + 1}</td>
+            <td style="border:1px solid #000; padding:8px;">${formatTanggalRiwayat(t.tgl_bayar)}</td>
             <td style="border:1px solid #000; padding:8px;">${santriNama}</td>
-            <td style="border:1px solid #000; padding:8px; text-align:center; font-weight:bold; color:${isPemasukan ? '#047857' : '#DC2626'};">${t.jenis_transaksi}</td>
-            <td style="border:1px solid #000; padding:8px;">${tagihanKat} ${t.keterangan ? ' - '+t.keterangan : ''}</td>
+            <td style="border:1px solid #000; padding:8px; text-align:center;">${jenisLabel}</td>
+            <td style="border:1px solid #000; padding:8px;">${tagihanKat}${ket}</td>
             <td style="border:1px solid #000; padding:8px; text-align:center;">${t.metode || 'Tunai'}</td>
-            <td style="border:1px solid #000; padding:8px; text-align:right; font-weight:bold; color:${isPemasukan ? '#047857' : '#DC2626'};">${isPemasukan ? '+' : '-'} ${rPemasukanRupiah(nominal)}</td>
+            <td style="border:1px solid #000; padding:8px; text-align:right; font-weight:bold;">${prefix}${rPemasukanRupiah(nominal)}</td>
         </tr>`;
     });
     
-    let tfoot = `<tr>
-        <th colspan="6" style="border:1px solid #000; padding:8px; text-align:right;">TOTAL PEMASUKAN</th>
-        <th style="border:1px solid #000; padding:8px; text-align:right; font-size:1rem; color:#047857;">${rPemasukanRupiah(totalPemasukan)}</th>
-    </tr>
-    <tr>
-        <th colspan="6" style="border:1px solid #000; padding:8px; text-align:right;">TOTAL PENGELUARAN</th>
-        <th style="border:1px solid #000; padding:8px; text-align:right; font-size:1rem; color:#DC2626;">${rPemasukanRupiah(totalPengeluaran)}</th>
-    </tr>
-    <tr>
-        <th colspan="6" style="border:1px solid #000; padding:8px; text-align:right; font-size:1.1rem;">SALDO BERSIH</th>
-        <th style="border:1px solid #000; padding:8px; text-align:right; font-size:1.1rem;">${rPemasukanRupiah(totalPemasukan - totalPengeluaran)}</th>
-    </tr>`;
+    const saldoAkhir = totalPemasukan - totalPengeluaran;
+
+    const printContainer = document.getElementById('printAreaRiwayatKeuangan');
+    if (!printContainer) return;
     
-    const now = new Date();
-    const dateStr = now.getDate() + ' ' + now.toLocaleString('id-ID', { month: 'long' }) + ' ' + now.getFullYear();
-
-    let printHtml = `
-        <div style="font-family: 'Times New Roman', Times, serif; padding: 20px; color: #111827; background: white;">
-          <!-- KOP SURAT RESMI -->
-          <div style="display: flex; align-items: center; justify-content: center; gap: 20px; border-bottom: 3px double #111827; padding-bottom: 12px; margin-bottom: 16px;">
-            <img src="img/logo.png" alt="Logo" style="width: 85px; height: auto;" onerror="this.style.display='none'">
-            <div style="text-align: center;">
-              <h3 style="margin: 0; font-size: 1.1rem; letter-spacing: 1px; color: #047857;">PONDOK PESANTREN</h3>
-              <h1 style="margin: 2px 0; font-size: 1.6rem; font-weight: 800; color: #047857;">AL-FATHONAH KUDUKERAS</h1>
-              <p style="margin: 0; font-size: 0.85rem; color: #374151;">Jl. H. Mastra No. 04, RT. 03 RW.03, Desa Kudukeras, Kec. Babakan, Kab. Cirebon 45191</p>
-              <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: #4B5563;">Telp/WA: 085323056221 | Email: ponpesalfathonah7@gmail.com</p>
+    printContainer.innerHTML = `
+        <div style="font-family: Arial, sans-serif; padding: 20px; color: #000;">
+            <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 16px;">
+                <h2 style="margin: 0 0 4px 0; font-size: 1.3rem;">REKAPITULASI SELURUH RIWAYAT TRANSAKSI KEUANGAN</h2>
+                <h3 style="margin: 0 0 6px 0; font-size: 1.1rem;">PONDOK PESANTREN AL-FATHONAH</h3>
+                <p style="margin: 0; font-size: 0.9rem; color: #4B5563;">${infoPeriode} | ${infoJenis}</p>
             </div>
-          </div>
-
-          <!-- JUDUL LAPORAN -->
-          <div style="text-align: center; margin-bottom: 20px;">
-            <h2 style="font-size: 1.25rem; font-weight: bold; text-decoration: underline; text-transform: uppercase; margin: 0 0 4px 0;">
-              LAPORAN RIWAYAT TRANSAKSI KEUANGAN
-            </h2>
-            <p style="margin: 4px 0 0 0; font-size: 0.95rem; font-weight: 600; color: #4B5563;">${infoPeriode} &mdash; ${infoJenis}</p>
-          </div>
-
-          <!-- TABEL DATA -->
-          <table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom: 30px;">
-            <thead>${thead}</thead>
-            <tbody>${tbody}</tbody>
-            <tfoot>${tfoot}</tfoot>
-          </table>
-
-          <!-- TANDA TANGAN -->
-          <div style="display: flex; justify-content: space-between; align-items: flex-end; font-size: 0.9rem; margin-top: 30px; page-break-inside: avoid;">
-            <div style="text-align: center; min-width: 200px;">
-              <p style="margin-bottom: 60px;">Mengetahui,<br><strong>Pengawas Yayasan Al-Fathonah</strong></p>
-              <p style="margin: 0;"><span style="display:inline-block; width:180px; border-bottom:1.5px solid #111827;"></span></p>
+            
+            <div style="display: flex; justify-content: space-between; margin-bottom: 14px; font-size: 0.9rem;">
+                <div><strong>Total Pemasukan:</strong> ${rPemasukanRupiah(totalPemasukan)}</div>
+                <div><strong>Total Pengeluaran:</strong> ${rPemasukanRupiah(totalPengeluaran)}</div>
+                <div><strong>Sisa Saldo Kas:</strong> ${rPemasukanRupiah(saldoAkhir)}</div>
             </div>
-            <div style="text-align: center; min-width: 200px;">
-              <p style="margin-bottom: 60px;">Cirebon, ${dateStr}<br><strong>Bendahara</strong></p>
-              <p style="margin: 0;"><span style="display:inline-block; width:180px; border-bottom:1.5px solid #111827;"></span></p>
+
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 24px;">
+                <thead>${thead}</thead>
+                <tbody>${tbody}</tbody>
+            </table>
+            
+            <div style="display: flex; justify-content: flex-end; margin-top: 30px;">
+                <div style="text-align: center; width: 200px;">
+                    <p style="margin-bottom: 60px;">Dicetak Tanggal: ${new Date().toLocaleDateString('id-ID')}<br>Bendahara Pesantren,</p>
+                    <p style="font-weight: bold; text-decoration: underline; margin: 0;">( ELIANA )</p>
+                </div>
             </div>
-          </div>
         </div>
     `;
-    
-    if (typeof doPrint === 'function') {
-        doPrint(printHtml, 'landscape');
-    } else {
-        const win = window.open('', '_blank');
-        if (win) {
-            win.document.write(`<html><head><title>Cetak Laporan Keuangan</title></head><body>${printHtml}</body></html>`);
-            win.document.close();
-            win.print();
-        }
-    }
-}
 
-window.printRiwayatKeuangan = printRiwayatPemasukan;
+    window.print();
+}
