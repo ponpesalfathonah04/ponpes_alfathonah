@@ -981,6 +981,11 @@
                   <option value="2028">2028</option>
                 </select>
               </div>
+              <div class="form-group" style="margin:0;">
+                <button type="button" class="btn-cancel" onclick="resetFilterRiwayat()" style="padding: 8px 14px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; cursor: pointer; white-space: nowrap; border: 1px solid var(--gray-300);" title="Tampilkan Seluruh Transaksi">
+                  Tampilkan Semua
+                </button>
+              </div>
             </div>
             
           </div>
@@ -2143,28 +2148,28 @@
             </div>
           </div>
           
-          <div class="form-grid" style="align-items: flex-start; margin-top: 20px;">
+          <div class="form-grid laporan-tables-grid" style="align-items: stretch; margin-top: 18px; width: 100%;">
             <!-- Pemasukan -->
-            <div class="card" style="padding: 15px; background: #f0fdf4; border: 1px solid #bbf7d0; box-shadow: none;">
-              <h4 style="margin-bottom: 12px; color: #166534; font-size: 0.9rem; border-bottom: 1px solid #bbf7d0; padding-bottom: 8px;">Pemasukan</h4>
-              <div id="pemasukanContainer" style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="card card-laporan-section" style="padding: 14px; background: #f0fdf4; border: 1.5px solid #bbf7d0; box-shadow: none; width: 100%; box-sizing: border-box; overflow: hidden;">
+              <h4 style="margin-bottom: 10px; color: #166534; font-size: 0.9rem; font-weight: 700; border-bottom: 1.5px solid #bbf7d0; padding-bottom: 6px;">Pemasukan</h4>
+              <div id="pemasukanContainer" style="display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box;">
                 <!-- dynamic rows -->
               </div>
               <button type="button" class="btn-row-add pemasukan" onclick="addPemasukanRow()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="15" height="15"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                + Tambah Pemasukan
+                Tambah Pemasukan
               </button>
             </div>
             
             <!-- Pengeluaran -->
-            <div class="card" style="padding: 15px; background: #fef2f2; border: 1px solid #fecaca; box-shadow: none;">
-              <h4 style="margin-bottom: 12px; color: #991b1b; font-size: 0.9rem; border-bottom: 1px solid #fecaca; padding-bottom: 8px;">Pengeluaran</h4>
-              <div id="pengeluaranContainer" style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="card card-laporan-section" style="padding: 14px; background: #fef2f2; border: 1.5px solid #fecaca; box-shadow: none; width: 100%; box-sizing: border-box; overflow: hidden;">
+              <h4 style="margin-bottom: 10px; color: #991b1b; font-size: 0.9rem; font-weight: 700; border-bottom: 1.5px solid #fecaca; padding-bottom: 6px;">Pengeluaran</h4>
+              <div id="pengeluaranContainer" style="display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box;">
                 <!-- dynamic rows -->
               </div>
               <button type="button" class="btn-row-add pengeluaran" onclick="addPengeluaranRow()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="15" height="15"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                + Tambah Pengeluaran
+                Tambah Pengeluaran
               </button>
             </div>
           </div>
