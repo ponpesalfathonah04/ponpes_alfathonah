@@ -107,6 +107,25 @@ async function generateNIS() {
 
 // ===== NAVIGATION / ROUTING =====
 function showSection(sectionId) {
+  // Pembatasan hak akses role bendahara: hanya diizinkan melihat Menu Utama (dashboard) dan menu Keuangan
+  const userRole = (currentUserRole || '').toLowerCase().trim();
+  if (userRole === 'bendahara') {
+    const allowedBendaharaSections = [
+      'dashboard',
+      'spp',
+      'uang-jajan',
+      'bayar-lainnya',
+      'belanja',
+      'riwayat-keuangan',
+      'laporan'
+    ];
+    if (!allowedBendaharaSections.includes(sectionId)) {
+      console.warn(`Akses ditolak: role bendahara tidak memiliki izin membuka seksi '${sectionId}'.`);
+      showSection('dashboard');
+      return;
+    }
+  }
+
   // Cleanup any leftover print containers from body
   ['printAreaCategoryLaporan', 'printAreaBayarLaporan', 'universalPrintContainer'].forEach(id => {
     const el = document.getElementById(id);
@@ -204,6 +223,7 @@ async function initDashboard() {
   const sb = getSupabase();
   if (!sb) { setTimeout(initDashboard, 500); return; }
   await checkAuth();
+  applyRolePermissions(currentUserRole);
   showSection('dashboard'); // Loads dashboard by default
 }
 
@@ -239,10 +259,41 @@ async function checkAuth() {
       
       // Update sidebar user profile
       updateUserDisplay(currentUserName, currentUserRole);
+
+      // Terapkan pembatasan hak akses menu berdasarkan role (termasuk role bendahara)
+      applyRolePermissions(currentUserRole);
     }
   } catch (err) {
     console.error('Session error:', err);
     window.location.replace('index.html');
+  }
+}
+
+// ===== ROLE PERMISSIONS CONTROLLER =====
+function applyRolePermissions(role) {
+  const r = (role || '').toLowerCase().trim();
+  
+  // Set class pada document.body
+  document.body.classList.remove('role-admin', 'role-bendahara', 'role-pengawas', 'role-pengajar');
+  if (r) {
+    document.body.classList.add('role-' + r);
+  }
+
+  // Khusus role bendahara: HANYA dapat melihat Menu Utama (Dashboard) dan menu pada kategori Keuangan
+  if (r === 'bendahara') {
+    document.querySelectorAll('.sidebar-menu .menu-group').forEach(grp => {
+      const groupName = grp.getAttribute('data-group');
+      if (groupName === 'utama' || groupName === 'keuangan') {
+        grp.style.display = '';
+      } else {
+        grp.style.display = 'none';
+      }
+    });
+  } else {
+    // Role lainnya (admin, pengawas, pengajar): tampilkan grup menu
+    document.querySelectorAll('.sidebar-menu .menu-group').forEach(grp => {
+      grp.style.display = '';
+    });
   }
 }
 
