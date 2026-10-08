@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "app.vercel.ponpes_alfathonah.twa",
+    "sha256_cert_fingerprints": ["14:35:67:03:D5:67:34:74:BA:56:F1:28:6E:0B:6E:0C:51:B4:A7:47:C9:C3:41:E4:CA:7D:57:02:81:73:58:08"]
+  }
+}]
