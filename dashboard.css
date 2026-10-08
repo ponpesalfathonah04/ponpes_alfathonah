@@ -52,6 +52,12 @@ body { font-family: 'Poppins', sans-serif; background: #F0F2F5; color: var(--gra
 .logo-subtitle { font-size: 0.68rem; opacity: 0.5; font-weight: 400; letter-spacing: 0.5px; display: block; line-height: 1; }
 .btn-close-sidebar { background: none; border: none; color: rgba(255,255,255,0.5); cursor: pointer; display: none; }
 .sidebar-menu { flex: 1; padding: 16px 12px; overflow-y: auto; }
+
+/* Hak Akses Role Bendahara: Hanya Menu Utama dan Kategori Keuangan */
+body.role-bendahara .menu-group:not([data-group="utama"]):not([data-group="keuangan"]) {
+  display: none !important;
+}
+
 .menu-label {
   font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.8px; color: rgba(255,255,255,0.35);
   padding: 12px 14px 6px; margin-top: 4px; font-weight: 600;
