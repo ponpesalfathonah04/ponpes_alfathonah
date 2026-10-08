@@ -786,12 +786,12 @@ ul {
   opacity: 0.5;
 }
 
-/* Tokoh Grid - 2 sambutan berdampingan */
+/* Tokoh Grid - 3 sambutan (Ketua, Wakil Ketua, Pengasuh) */
 .about-tokoh-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
-  align-items: start;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  align-items: stretch;
 }
 
 .tokoh-card {
@@ -799,11 +799,13 @@ ul {
   flex-direction: column;
   align-items: center;
   gap: 20px;
+  height: 100%;
 }
 
 .tokoh-photo-frame {
   position: relative;
-  width: 280px;
+  width: 100%;
+  max-width: 260px;
   aspect-ratio: 3/4;
   border-radius: 20px;
   overflow: hidden;
@@ -821,6 +823,8 @@ ul {
 
 .tokoh-sambutan {
   width: 100%;
+  flex: 1;
+  display: flex;
 }
 
 /* Sambutan Quote - shared styling */
@@ -831,6 +835,10 @@ ul {
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--gray-100);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .sambutan-quote .quote-icon {
@@ -3175,12 +3183,14 @@ ul {
 
   /* About */
   .about-tokoh-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    max-width: 440px;
+    margin: 0 auto;
   }
 
   .tokoh-photo-frame {
-    width: 200px;
+    width: 240px;
   }
 
   .about-content-full h3 {
