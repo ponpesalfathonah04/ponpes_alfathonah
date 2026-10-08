@@ -142,19 +142,26 @@ async function loadLandingPageCMS() {
       if(document.getElementById('web_sedekah_rek')) document.getElementById('web_sedekah_rek').innerText = settings.sedekah_rek;
       if(document.getElementById('web_sedekah_nama')) document.getElementById('web_sedekah_nama').innerText = 'A.N. ' + settings.sedekah_nama;
       
-      // Sosial Media 
-      if(document.getElementById('web_sosmed_facebook') && settings.sosmed_facebook) {
-        document.getElementById('web_sosmed_facebook').href = settings.sosmed_facebook;
-      }
-      if(document.getElementById('web_sosmed_instagram') && settings.sosmed_instagram) {
-        document.getElementById('web_sosmed_instagram').href = settings.sosmed_instagram;
-      }
-      if(document.getElementById('web_sosmed_tiktok') && (settings.tiktok || settings.sosmed_tiktok)) {
-        document.getElementById('web_sosmed_tiktok').href = settings.tiktok || settings.sosmed_tiktok;
-      }
-      if(document.getElementById('web_sosmed_youtube') && settings.sosmed_youtube) {
-        document.getElementById('web_sosmed_youtube').href = settings.sosmed_youtube;
-      }
+      // Sosial Media Footer (Integrasi Link Otomatis & Aman)
+      const setupSocialLink = (elementId, rawUrl) => {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        const url = (rawUrl || '').trim();
+        if (url && url !== '#' && url !== 'javascript:void(0)') {
+          el.href = url.startsWith('http://') || url.startsWith('https://') ? url : `https://${url}`;
+          el.target = '_blank';
+          el.rel = 'noopener noreferrer';
+        } else {
+          el.href = 'javascript:void(0)';
+          el.removeAttribute('target');
+          el.removeAttribute('rel');
+        }
+      };
+
+      setupSocialLink('web_sosmed_facebook', settings.sosmed_facebook);
+      setupSocialLink('web_sosmed_instagram', settings.sosmed_instagram);
+      setupSocialLink('web_sosmed_tiktok', settings.tiktok || settings.sosmed_tiktok);
+      setupSocialLink('web_sosmed_youtube', settings.sosmed_youtube);
     }
 
     // 2. Sarana & Prasarana
