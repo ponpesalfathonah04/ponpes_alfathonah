@@ -405,6 +405,9 @@ async function saveBelanja(e) {
         if (typeof filterSpp === 'function') {
             filterSpp(); // refresh statistik spp jika sedang terbuka
         }
+        if (typeof loadRiwayatKeuangan === 'function') {
+            loadRiwayatKeuangan(); // sinkronkan riwayat transaksi
+        }
     }
 }
 
@@ -426,6 +429,9 @@ async function deleteBelanja(id) {
             loadTransaksiBelanja();
             if (typeof filterSpp === 'function') {
                 filterSpp();
+            }
+            if (typeof loadRiwayatKeuangan === 'function') {
+                loadRiwayatKeuangan();
             }
         }
     };
