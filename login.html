@@ -692,15 +692,8 @@
     // ===== KEMBALI KE WEB PROFIL (FIX UNTUK PWA FULLSCREEN) =====
     function handleBackToWeb(e) {
       e.preventDefault();
-      const url = new URL('index.html', window.location.href).href;
-      // Dalam mode PWA standalone/fullscreen, buka di browser eksternal
-      if (window.matchMedia('(display-mode: standalone)').matches ||
-          window.matchMedia('(display-mode: fullscreen)').matches ||
-          window.navigator.standalone === true) {
-        window.open(url, '_blank');
-      } else {
-        window.location.href = url;
-      }
+      // Navigasi ke index.html dengan parameter ?web=true agar bypass auto-redirect PWA
+      window.location.href = 'index.html?web=true';
     }
 
     function togglePasswordVis() {
