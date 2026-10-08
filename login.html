@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Login - Pondok Pesantren Al-Fathonah</title>
+  
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#065F46">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Al-Fathonah">
+  <link rel="apple-touch-icon" href="img/logo.png">
+  <link rel="icon" type="image/png" href="img/logo.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Supabase JS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --primary: #065F46;
+      --primary-light: #10B981;
+      --primary-dark: #044E39;
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --danger: #EF4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(145deg, #044E39 0%, #065F46 45%, #0F766E 100%);
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Ambient background circles */
+    body::before {
+      content: '';
+      position: absolute;
+      width: 450px;
+      height: 450px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(16, 185, 129, 0) 70%);
+      top: -120px;
+      right: -100px;
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(20, 184, 166, 0.2) 0%, rgba(20, 184, 166, 0) 70%);
+      bottom: -100px;
+      left: -100px;
+      pointer-events: none;
+    }
+
+    .login-wrapper {
+      width: 100%;
+      max-width: 430px;
+      position: relative;
+      z-index: 10;
+      animation: fadeInScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .login-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 36px 32px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.35), 0 0 1px 1px rgba(255, 255, 255, 0.2);
+    }
+
+    .brand-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .brand-logo {
+      width: 82px;
+      height: 82px;
+      margin: 0 auto 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #F0FDF4;
+      border-radius: 20px;
+      padding: 10px;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15);
+      border: 1.5px solid #BBF7D0;
+    }
+
+    .brand-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .brand-header h1 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .brand-header p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 7px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      color: #94A3B8;
+      width: 18px;
+      height: 18px;
+      pointer-events: none;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px 12px 42px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      background: #F8FAFC;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus {
+      border-color: var(--primary-light);
+      background: #FFFFFF;
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 14px;
+      background: none;
+      border: none;
+      color: #94A3B8;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+    }
+    .toggle-password:hover {
+      color: var(--primary);
+    }
+
+    /* Error Alert */
+    .alert-error {
+      display: none;
+      background: #FEE2E2;
+      border: 1px solid #FCA5A5;
+      color: #B91C1C;
+      padding: 11px 14px;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Submit Button */
+    .btn-submit {
+      width: 100%;
+      padding: 13px 20px;
+      background: linear-gradient(135deg, #059669, #10B981);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(16, 185, 129, 0.45);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .back-home {
+      text-align: center;
+      margin-top: 24px;
+    }
+
+    .back-home a {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.82rem;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s;
+    }
+
+    .back-home a:hover {
+      color: #FFFFFF;
+      text-decoration: underline;
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="brand-header">
+        <div class="brand-logo">
+          <img src="img/logo.png" alt="Logo Ponpes Al-Fathonah" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23065F46%22><circle cx=%2212%22 cy=%2212%22 r=%2210%22/></svg>'">
+        </div>
+        <h1>Masuk ke Dashboard</h1>
+        <p>Pondok Pesantren Al-Fathonah</p>
+      </div>
+
+      <div class="alert-error" id="loginAlert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        <span id="loginAlertText">Email atau password salah.</span>
+      </div>
+
+      <form id="appLoginForm" onsubmit="handleAppLogin(event)">
+        <div class="form-group">
+          <label class="form-label" for="appEmail">Email / Akun</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <input type="email" id="appEmail" class="form-input" placeholder="nama@alfathonah.id" required autocomplete="username">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="appPassword">Kata Sandi</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <input type="password" id="appPassword" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" class="toggle-password" onclick="togglePasswordVis()" aria-label="Lihat kata sandi">
+              <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit" id="btnAppSubmit">
+          <span>Masuk Sekarang</span>
+        </button>
+      </form>
+    </div>
+
+    <div class="back-home">
+      <a href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        Kembali ke Halaman Web Profil
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Supabase credentials
+    const SUPABASE_URL = 'https://rnjqwgwazqlmhmxedhef.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuanF3Z3dhenFsbWhteGVkaGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5MDQ5MzUsImV4cCI6MjEwMTQ4MDkzNX0.Lg-9PAdE4JbmnbIJUrwkPSaeTwATZpcoQrFWzgkfhME';
+    let _supabase = null;
+
+    function getSb() {
+      if (!_supabase && window.supabase && window.supabase.createClient) {
+        _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+      return _supabase;
+    }
+
+    // Auto redirect if already logged in
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Register Service Worker for PWA
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
+      }
+
+      const sb = getSb();
+      if (sb) {
+        try {
+          const { data: { session } } = await sb.auth.getSession();
+          if (session) {
+            window.location.replace('dashboard.html');
+          }
+        } catch (e) {
+          console.log('Session check:', e);
+        }
+      }
+    });
+
+    function togglePasswordVis() {
+      const inp = document.getElementById('appPassword');
+      const icon = document.getElementById('eyeIcon');
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+      } else {
+        inp.type = 'password';
+        icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+      }
+    }
+
+    async function handleAppLogin(e) {
+      e.preventDefault();
+      const alertEl = document.getElementById('loginAlert');
+      const alertText = document.getElementById('loginAlertText');
+      const btn = document.getElementById('btnAppSubmit');
+      
+      alertEl.style.display = 'none';
+
+      const email = document.getElementById('appEmail').value.trim();
+      const password = document.getElementById('appPassword').value;
+
+      const sb = getSb();
+      if (!sb) {
+        alertText.textContent = 'Koneksi database belum siap. Mohon refresh.';
+        alertEl.style.display = 'flex';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div><span>Memeriksa Akun...</span>';
+
+      try {
+        const { data, error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) {
+          alertText.textContent = error.message === 'Invalid login credentials' 
+            ? 'Email atau kata sandi tidak sesuai. Silakan periksa kembali.' 
+            : error.message;
+          alertEl.style.display = 'flex';
+          btn.disabled = false;
+          btn.innerHTML = '<span>Masuk Sekarang</span>';
+          return;
+        }
+
+        // Cek status akun di pengelolaan_akun
+        if (data && data.session) {
+          const { data: profile } = await sb.from('pengelolaan_akun')
+            .select('status')
+            .eq('id', data.session.user.id)
+            .single();
+
+          if (profile && profile.status === 'Nonaktif') {
+            await sb.auth.signOut();
+            alertText.textContent = 'Akun Anda dinonaktifkan. Hubungi Administrator.';
+            alertEl.style.display = 'flex';
+            btn.disabled = false;
+            btn.innerHTML = '<span>Masuk Sekarang</span>';
+            return;
+          }
+          if (profile && profile.status === 'Menunggu') {
+            await sb.auth.signOut();
+            alertText.textContent = 'Akun Anda sedang menunggu persetujuan Administrator.';
+            alertEl.style.display = 'flex';
+            btn.disabled = false;
+            btn.innerHTML = '<span>Masuk Sekarang</span>';
+            return;
+          }
+        }
+
+        // Sukses -> Masuk langsung ke dashboard
+        window.location.replace('dashboard.html');
+
+      } catch (err) {
+        alertText.textContent = 'Terjadi kesalahan jaringan. Cek koneksi internet Anda.';
+        alertEl.style.display = 'flex';
+        btn.disabled = false;
+        btn.innerHTML = '<span>Masuk Sekarang</span>';
+      }
+    }
+  </script>
+</body>
+</html>

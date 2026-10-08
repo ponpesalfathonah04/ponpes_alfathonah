@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pondok Pesantren Al Fathonah - Mencetak Generasi Qur'ani Berakhlak Mulia</title>
+  <meta name="description"
+    content="Pondok Pesantren Al Fathonah - Lembaga pendidikan Islam terpadu yang mencetak generasi Qur'ani berakhlak mulia dengan kurikulum modern dan fasilitas lengkap.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="portal-santri.css">
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#065F46">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <script>
+    // Jika aplikasi dibuka sebagai PWA Android / standalone app, langsung arahkan ke login.html
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+      window.location.replace('login.html');
+    }
+    // Daftarkan service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(err => console.log('SW reg error:', err));
+    }
+  </script>
+</head>
+
+<body>
+
+  <!-- PRELOADER -->
+  <div id="preloader">
+    <div class="loader">
+      <div class="loader-logo">
+        <img src="img/logo.png" alt="Loading">
+      </div>
+    </div>
+  </div>
+
+  <!-- SCROLL PROGRESS BAR -->
+  <div class="scroll-progress-container">
+    <div class="scroll-progress-bar" id="scrollProgressBar"></div>
+  </div>
+
+  <!-- NAVBAR -->
+  <div class="nav-overlay" id="navOverlay"></div>
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="#beranda" class="nav-logo">
+        <img src="img/logo.png" alt="Logo Al Fathonah" class="nav-logo-img">
+        <div class="nav-logo-text">
+          <span class="tagline">Pondok Pesantren</span>
+          <span class="name">AL-FATHONAH</span>
+        </div>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li>
+          <a href="#beranda" class="nav-link active">
+            <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Beranda
+          </a>
+        </li>
+        <li class="nav-dropdown desktop-only">
+          <a class="nav-link nav-dropdown-toggle">
+            <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            Profil
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="#tentang" class="dropdown-item">
+              <div class="dropdown-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg></div>
+              <span>Profil Pesantren</span>
+            </a>
+            <a href="#visi-misi" class="dropdown-item">
+              <div class="dropdown-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg></div>
+              <span>Visi & Misi</span>
+            </a>
+          </div>
+        </li>
+        <li class="mobile-only">
+          <a href="#tentang" class="nav-link">
+            <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
+            Profil Pesantren
+          </a>
+        </li>
+        <li class="mobile-only">
+          <a href="#visi-misi" class="nav-link">
+            <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+            Visi & Misi
+          </a>
+        </li>
+        <li class="nav-dropdown desktop-only">
+          <a class="nav-link nav-dropdown-toggle">
+            <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            Fasilitas & Program
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="#fasilitas" class="dropdown-item">
+              <div class="dropdown-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M3 21h18"></path><path d="M9 8h1"></path><path d="M9 12h1"></path><path d="M9 16h1"></path><path d="M14 8h1"></path><path d="M14 12h1"></path><path d="M14 16h1"></path><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path></svg></div>
+              <span>Sarana & Prasarana</span>
+            </a>
+            <a href="#kegiatan" class="dropdown-item">
+              <div class="dropdown-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M13 4l-4 6 5 2-4 8"></path></svg></div>
+              <span>Ekstrakurikuler</span>
+            </a>
+          </div>
+        </li>
+        <li class="mobile-only">
+          <a href="#fasilitas" class="nav-link">
+            <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path></svg>
+            Sarana & Prasarana
+          </a>
+        </li>
+        <li class="mobile-only">
+          <a href="#kegiatan" class="nav-link">
+            <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4l-4 6 5 2-4 8"></path></svg>
+            Ekstrakurikuler
+          </a>
+        </li>
+        <li class="nav-dropdown">
+          <a class="nav-link nav-dropdown-toggle">
+            <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            Informasi
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="#galeri" class="dropdown-item">
+              <div class="dropdown-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></div>
+              <span>Galeri Foto</span>
+            </a>
+            <a href="#testimoni" class="dropdown-item">
+              <div class="dropdown-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
+              <span>Testimoni</span>
+            </a>
+            <a href="#faq" class="dropdown-item">
+              <div class="dropdown-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
+              <span>FAQ</span>
+            </a>
+            <a href="#berita" class="dropdown-item">
+              <div class="dropdown-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+              <span>Berita Pesantren</span>
+            </a>
+          </div>
+        </li>
+        <li class="mobile-only">
+          <a href="#berita" class="nav-link">
+            <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Berita
+          </a>
+        </li>
+        <li class="mobile-only">
+          <a href="javascript:void(0)" class="nav-link" onclick="openPortalSearchModal(); closeMenu();">
+            <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Portal Wali Santri
+          </a>
+        </li>
+        <li>
+          <a href="#psb" class="nav-link">
+            <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4-4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+            PSB
+          </a>
+        </li>
+        <li class="nav-mobile-cta">
+          <a href="#" class="nav-link nav-login-mobile" onclick="openLoginModal(event)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            Masuk
+          </a>
+        </li>
+        <li class="nav-mobile-close">
+          <button class="nav-close-btn" onclick="closeMenu()" aria-label="Tutup">Tutup</button>
+        </li>
+        <!-- Desktop-only items -->
+        <li class="desktop-only"><a href="javascript:void(0)" class="nav-link nav-portal-btn" onclick="openPortalSearchModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="vertical-align:middle;margin-right:4px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Portal Wali Santri</a></li>
+        <li class="desktop-only"><a href="#sedekah" class="nav-link nav-cta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="vertical-align:middle;margin-right:4px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> Sedekah</a></li>
+        <li class="desktop-only">
+          <a href="#" class="nav-link nav-login" onclick="openLoginModal(event)" style="display: inline-flex; align-items: center; gap: 5px; color: rgba(255,255,255,0.85);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            Login
+          </a>
+        </li>
+      </ul>
+      <div class="nav-hamburger" id="navHamburger">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="beranda" style="position: relative; z-index: 1; overflow: hidden;">
+    <div class="hero-slider-bg" id="heroSlider">
+      <div class="hero-overlay"></div>
+    </div>
+    <!-- Particles Decoration -->
+    <div class="hero-particles">
+      <div class="particle p1"></div><div class="particle p2"></div><div class="particle p3"></div><div class="particle p4"></div><div class="particle p5"></div>
+      <div class="particle p6"></div><div class="particle p7"></div><div class="particle p8"></div>
+    </div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge" id="web_hero_psb_badge"><span class="dot"></span> Penerimaan Santri Baru 2026/2027</div>
+        <h1>Pondok Pesantren <span class="highlight">Al-Fathonah</span></h1>
+        <p class="hero-arabic">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</p>
+        <p>Mencetak generasi Qur'ani yang berakhlak mulia, berwawasan luas, dan siap menjadi pemimpin umat di masa
+          depan.</p>
+        <div class="hero-buttons">
+          <a href="#psb" class="btn btn-primary" id="heroBtnDaftar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <line x1="19" y1="8" x2="19" y2="14" />
+              <line x1="22" y1="11" x2="16" y2="11" />
+            </svg>
+            Daftar Sekarang
+          </a>
+          <button type="button" class="btn btn-portal-wali" onclick="openPortalSearchModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="18" height="18">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            Portal Wali Santri Terpadu
+          </button>
+          <a href="#tentang" class="btn btn-secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <polygon points="10 8 16 12 10 16 10 8" />
+            </svg>
+            Pelajari Lebih
+          </a>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- TENTANG KAMI -->
+  <section class="about" id="tentang">
+    <div class="container">
+      <div class="section-header reveal" style="text-align: center; margin-bottom: 2rem;">
+        <h2 class="section-title">Tentang <span>Kami</span></h2>
+        <p class="section-subtitle">Mengenal lebih dekat Pondok Pesantren Al Fathonah dan para tokoh di balik komitmen pendidikan Islam terpadu.</p>
+      </div>
+
+      <!-- Baris Atas: 2 Tokoh Sambutan -->
+      <div class="about-tokoh-grid reveal">
+        <!-- Ketua Yayasan -->
+        <div class="tokoh-card">
+          <div class="tokoh-photo-frame">
+            <img src="img/ketua-yayasan-duduk.png" alt="" class="tokoh-photo" id="web_ketua_foto">
+          </div>
+          <div class="tokoh-sambutan">
+            <div class="sambutan-quote">
+              <svg class="quote-icon" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+              </svg>
+              <p class="sambutan-text" id="web_ketua_sambutan">Yayasan Al Fathonah hadir sebagai wujud nyata komitmen kami dalam membangun generasi yang berilmu, beriman, dan bermanfaat bagi umat dan bangsa.</p>
+              <div class="sambutan-author">
+                <div class="sambutan-line"></div>
+                <div>
+                  <p class="sambutan-name" id="web_ketua_nama">Dr. Ir. H. Muhammad Salman, ST., MIT.</p>
+                  <p class="sambutan-title" id="web_ketua_jabatan">Ketua Yayasan Al Fathonah</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pengasuh Ponpes -->
+        <div class="tokoh-card">
+          <div class="tokoh-photo-frame">
+            <img src="img/pengasuh.jpeg" alt="KH. Aminuddin Lathief" class="tokoh-photo" id="web_pengasuh_foto">
+          </div>
+          <div class="tokoh-sambutan">
+            <div class="sambutan-quote">
+              <svg class="quote-icon" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+              </svg>
+              <p class="sambutan-text" id="web_pengasuh_sambutan">Mendidik generasi yang tidak hanya cerdas secara akal, tetapi juga mulia secara akhlak. Inilah amanah yang kami emban di Pondok Pesantren Al Fathonah.</p>
+              <div class="sambutan-author">
+                <div class="sambutan-line"></div>
+                <div>
+                  <p class="sambutan-name" id="web_pengasuh_nama">KH. Aminuddin Lathief</p>
+                  <p class="sambutan-title" id="web_pengasuh_jabatan">Pengasuh Pondok Pesantren Al Fathonah</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Baris Bawah: Profil & Keunggulan Pesantren -->
+      <div class="about-content-full reveal" style="margin-top: 48px;">
+        <h3>Mencetak Generasi <span>Qur'ani</span> yang Berakhlak Mulia</h3>
+        <div id="web_tentang_teks">
+          <p>Pondok Pesantren Al Fathonah adalah lembaga pendidikan Islam terpadu yang berdedikasi dalam membentuk
+            karakter santri yang hafal Al-Qur'an, berilmu, dan berakhlakul karimah. Dengan menggabungkan kurikulum
+            pesantren klasik dan pendidikan modern, kami berkomitmen melahirkan generasi yang siap menghadapi tantangan zaman.</p>
+          <p>Didirikan dengan semangat dakwah dan cinta ilmu, Pondok Pesantren Al Fathonah telah menjadi rumah kedua
+            bagi ratusan santri dari berbagai daerah. Kami menyediakan lingkungan belajar yang kondusif, aman, dan
+            penuh kasih sayang layaknya keluarga sendiri. Setiap santri dibimbing oleh para ustadz dan ustadzah
+            berpengalaman yang senantiasa memberikan teladan terbaik dalam kehidupan sehari-hari.</p>
+        </div>
+        <div class="about-features-row" id="web_program_unggulan_list">
+          <div class="about-feature">
+            <div class="about-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg></div>
+            <div class="about-feature-text">
+              <h4>Tahfidz Al-Qur'an</h4>
+              <p>Program hafalan Al-Qur'an 30 Juz</p>
+            </div>
+          </div>
+          <div class="about-feature">
+            <div class="about-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg></div>
+            <div class="about-feature-text">
+              <h4>Pendidikan Formal</h4>
+              <p>Kurikulum Nasional terintegrasi</p>
+            </div>
+          </div>
+          <div class="about-feature">
+            <div class="about-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M12 2l3 5v15H9V7z"></path></svg></div>
+            <div class="about-feature-text">
+              <h4>Kajian Kitab Kuning</h4>
+              <p>Pembelajaran kitab salaf komprehensif</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISI & MISI -->
+  <section class="visi-misi" id="visi-misi">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">Visi & <span>Misi</span> Kami</h2>
+        <p class="section-subtitle">Landasan dan arah tujuan Pondok Pesantren Al Fathonah dalam mencetak generasi
+          terbaik umat.</p>
+      </div>
+      <div class="visi-misi-grid">
+        <div class="vm-card vm-card-visi reveal delay-1">
+          <div class="vm-card-decor"></div>
+          <div class="vm-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+          <h3>Visi</h3>
+          <p id="web_visi_teks">Menjadi lembaga pendidikan Islam terdepan yang melahirkan generasi Qur'ani, berilmu amaliyah, beramal
+            ilmiyah, dan berakhlakul karimah serta mampu menjadi rahmat bagi seluruh alam.</p>
+        </div>
+        <div class="vm-card vm-card-misi reveal delay-2">
+          <div class="vm-card-decor"></div>
+          <div class="vm-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32"><path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4 20-7z"></path></svg></div>
+          <h3>Misi</h3>
+          <div class="misi-list" id="web_misi_list">
+            <div class="misi-item"><span class="misi-item-num">1</span><span>Menyelenggarakan pendidikan Al-Qur'an dan
+                tahfidz secara intensif dan berkualitas.</span></div>
+            <div class="misi-item"><span class="misi-item-num">2</span><span>Mengintegrasikan kurikulum pesantren dengan
+                pendidikan formal berstandar nasional.</span></div>
+            <div class="misi-item"><span class="misi-item-num">3</span><span>Membentuk karakter santri yang berakhlak
+                mulia, disiplin, dan mandiri.</span></div>
+            <div class="misi-item"><span class="misi-item-num">4</span><span>Mengembangkan potensi santri dalam bidang
+                akademik, bahasa, dan keterampilan hidup.</span></div>
+            <div class="misi-item"><span class="misi-item-num">5</span><span>Menciptakan lingkungan belajar yang islami,
+                nyaman, dan kondusif.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SARANA & PRASARANA -->
+  <section class="fasilitas" id="fasilitas">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">Sarana & <span>Prasarana</span></h2>
+        <p class="section-subtitle">Fasilitas lengkap dan modern untuk mendukung proses belajar dan kehidupan santri
+          yang nyaman.</p>
+      </div>
+      <!-- GRID FASILITAS DARI DATABASE -->
+      <div class="fasilitas-grid" id="web_sarana_grid">
+        <div class="fasilitas-card reveal delay-1">
+          <div class="fasilitas-card-image">
+            <img src="img/galeri2.png" alt="Masjid" class="facility-visual" style="width: 100%; height: 100%; object-fit: cover; border-radius: 0;">
+            <div class="overlay"></div>
+          </div>
+          <div class="fasilitas-card-body">
+            <h4>Masjid</h4>
+            <p>Masjid utama dengan kapasitas besar untuk sholat berjamaah dan kajian ilmu.</p><span
+              class="tag">Ibadah</span>
+          </div>
+        </div>
+        <div class="fasilitas-card reveal delay-2">
+          <div class="fasilitas-card-image">
+            <img src="img/hero2.jpg" alt="Ruang Kelas" class="facility-visual" style="width: 100%; height: 100%; object-fit: cover; border-radius: 0;">
+            <div class="overlay"></div>
+          </div>
+          <div class="fasilitas-card-body">
+            <h4>Ruang Kelas</h4>
+            <p>Ruang kelas modern dilengkapi AC, proyektor, dan whiteboard interaktif.</p><span
+              class="tag">Pendidikan</span>
+          </div>
+        </div>
+        <div class="fasilitas-card reveal delay-3">
+          <div class="fasilitas-card-image">
+            <img src="img/hero3.jpg" alt="Asrama" class="facility-visual" style="width: 100%; height: 100%; object-fit: cover; border-radius: 0;">
+            <div class="overlay"></div>
+          </div>
+          <div class="fasilitas-card-body">
+            <h4>Asrama Santri</h4>
+            <p>Asrama nyaman dan bersih dengan pengawasan 24 jam untuk keamanan.</p><span class="tag">Hunian</span>
+          </div>
+        </div>
+        <div class="fasilitas-card reveal delay-4">
+          <div class="fasilitas-card-image">
+            <img src="img/hero4.jpg" alt="Perpustakaan" class="facility-visual" style="width: 100%; height: 100%; object-fit: cover; border-radius: 0;">
+            <div class="overlay"></div>
+          </div>
+          <div class="fasilitas-card-body">
+            <h4>Perpustakaan</h4>
+            <p>Koleksi lengkap kitab klasik, buku pelajaran, dan referensi ilmiah.</p><span class="tag">Literasi</span>
+          </div>
+        </div>
+        <div class="fasilitas-card reveal delay-5">
+          <div class="fasilitas-card-image">
+            <img src="img/galeri5.png" alt="Lapangan" class="facility-visual" style="width: 100%; height: 100%; object-fit: cover; border-radius: 0;">
+            <div class="overlay"></div>
+          </div>
+          <div class="fasilitas-card-body">
+            <h4>Lapangan Olahraga</h4>
+            <p>Sarana olahraga lengkap untuk menjaga kesehatan jasmani santri.</p><span class="tag">Olahraga</span>
+          </div>
+        </div>
+        <div class="fasilitas-card reveal delay-6">
+          <div class="fasilitas-card-image">
+            <img src="img/hero1.jpg" alt="Aula" class="facility-visual" style="width: 100%; height: 100%; object-fit: cover; border-radius: 0;">
+            <div class="overlay"></div>
+          </div>
+          <div class="fasilitas-card-body">
+            <h4>Aula & Kantin</h4>
+            <p>Aula serbaguna dan kantin bersih dengan menu bergizi seimbang.</p><span class="tag">Umum</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KEGIATAN TAMBAHAN -->
+  <section class="kegiatan" id="kegiatan">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">Kegiatan <span>Tambahan</span></h2>
+        <p class="section-subtitle">Beragam kegiatan ekstrakurikuler untuk mengembangkan bakat dan minat santri.</p>
+      </div>
+      <!-- GRID KEGIATAN DARI DATABASE -->
+      <div class="kegiatan-grid" id="web_ekstra_grid">
+
+        <div class="kegiatan-card reveal delay-3">
+          <img src="img/galeri5.png" alt="Pencak Silat" style="width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 16px;">
+          <h4>Pencak Silat</h4>
+          <p>Seni bela diri tradisional untuk menjaga kebugaran.</p>
+        </div>
+        <div class="kegiatan-card reveal delay-4">
+          <img src="img/galeri6.png" alt="Muhadharah" style="width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 16px;">
+          <h4>Muhadharah</h4>
+          <p>Latihan pidato dan dakwah untuk mental santri.</p>
+        </div>
+        <div class="kegiatan-card reveal delay-1">
+          <img src="img/galeri4.png" alt="Kaligrafi" style="width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 16px;">
+          <h4>Kaligrafi</h4>
+          <p>Seni menulis huruf Arab yang indah dan bernilai seni tinggi.</p>
+        </div>
+        <div class="kegiatan-card reveal delay-2">
+          <img src="img/galeri3.png" alt="Hadroh" style="width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 16px;">
+          <h4>Hadroh</h4>
+          <p>Seni musik islami dengan shalawat dan rebana.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- GALERI FOTO -->
+  <section class="galeri" id="galeri">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">Galeri <span>Kegiatan</span></h2>
+        <p class="section-subtitle">Potret aktivitas santri di Pondok Pesantren Al Fathonah.</p>
+      </div>
+      <!-- GRID GALERI DARI DATABASE -->
+      <div class="galeri-grid" id="web_galeri_grid">
+        <div class="galeri-item reveal delay-1">
+          <img src="img/hero1.jpg" alt="Kegiatan Santri 1" loading="lazy">
+          <div class="galeri-overlay">
+            <span>Kegiatan Belajar</span>
+          </div>
+        </div>
+        <div class="galeri-item reveal delay-2">
+          <img src="img/hero2.jpg" alt="Kegiatan Santri 2" loading="lazy">
+          <div class="galeri-overlay">
+            <span>Menghafal Al-Qur'an</span>
+          </div>
+        </div>
+        <div class="galeri-item reveal delay-3">
+          <img src="img/galeri1.png" alt="Mengaji Bersama" loading="lazy">
+          <div class="galeri-overlay">
+            <span>Mengaji Bersama</span>
+          </div>
+        </div>
+        <div class="galeri-item reveal delay-4">
+          <img src="img/galeri2.png" alt="Sholat Berjamaah" loading="lazy">
+          <div class="galeri-overlay">
+            <span>Sholat Berjamaah</span>
+          </div>
+        </div>
+        <div class="galeri-item reveal delay-1">
+          <img src="img/hero3.jpg" alt="Ekstrakurikuler" loading="lazy">
+          <div class="galeri-overlay">
+            <span>Ekstrakurikuler</span>
+          </div>
+        </div>
+        <div class="galeri-item reveal delay-2">
+          <img src="img/galeri3.png" alt="Hadroh" loading="lazy">
+          <div class="galeri-overlay">
+            <span>Seni Hadroh</span>
+          </div>
+        </div>
+        <div class="galeri-item reveal delay-3">
+          <img src="img/galeri4.png" alt="Kaligrafi" loading="lazy">
+          <div class="galeri-overlay">
+            <span>Latihan Kaligrafi</span>
+          </div>
+        </div>
+        <div class="galeri-item reveal delay-4">
+          <img src="img/galeri5.png" alt="Pencak Silat" loading="lazy">
+          <div class="galeri-overlay">
+            <span>Pencak Silat</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONI WALI SANTRI -->
+  <section class="testimoni" id="testimoni">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">Kata <span>Mereka</span></h2>
+        <p class="section-subtitle">Apa kata wali santri tentang Pondok Pesantren Al Fathonah?</p>
+      </div>
+      <div class="testimoni-carousel-container">
+        <div class="testimoni-carousel" id="web_testimoni_track">
+          <!-- Data akan dimuat dari database -->
+        </div>
+        <div class="carousel-indicators" id="carouselIndicators"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ / PERTANYAAN UMUM -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">Pertanyaan <span>Umum</span> (FAQ)</h2>
+        <p class="section-subtitle">Jawaban untuk beberapa pertanyaan yang sering diajukan oleh calon wali santri.</p>
+      </div>
+      <div class="faq-container reveal delay-2" id="web_faq_list">
+        <div class="faq-item">
+          <button class="faq-question">Berapa biaya pendaftaran santri baru?</button>
+          <div class="faq-answer">
+            <p>Untuk rincian biaya pendaftaran, Anda dapat mengunduh brosur di bagian PSB atau menghubungi kami secara langsung melalui WhatsApp agar mendapatkan informasi terbaru.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">Apakah santri diperbolehkan membawa HP?</button>
+          <div class="faq-answer">
+            <p>Tidak. Untuk menjaga fokus hafalan dan belajar, santri tidak diperkenankan membawa alat komunikasi. Namun, wali santri disediakan jadwal khusus untuk menelepon via nomor pengurus asrama.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">Bagaimana jadwal kunjungan wali santri?</button>
+          <div class="faq-answer">
+            <p>Wali santri dapat berkunjung satu bulan sekali. Bagi santri baru, hanya boleh dijenguk setelah melewati masa orientasi selama 40 hari.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">Apakah ada program beasiswa untuk santri berprestasi?</button>
+          <div class="faq-answer">
+            <p>Ya, Pondok Pesantren Al Fathonah menyediakan beasiswa khusus bagi santri yatim piatu dan santri berprestasi yang mampu menyelesaikan hafalan 30 Juz.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">Apa saja ekstrakurikuler yang tersedia?</button>
+          <div class="faq-answer">
+            <p>Kami memiliki berbagai ekstrakurikuler unggulan seperti Pencak Silat, Seni Hadroh, Kaligrafi, Muhadharah (latihan pidato), dan kegiatan olahraga lainnya.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BERITA / KEGIATAN TERBARU -->
+  <section class="berita" id="berita">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">Berita & <span>Kegiatan Terbaru</span></h2>
+        <p class="section-subtitle">Ikuti perkembangan terbaru dari Pondok Pesantren Al Fathonah.</p>
+      </div>
+      <div class="berita-grid" id="beritaContainer">
+        <!-- Berita akan dimuat melalui JavaScript dari Supabase -->
+        <div style="grid-column: 1 / -1; text-align: center; color: var(--gray-500); padding: 40px;">
+          Memuat berita terbaru...
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PSB -->
+  <section class="psb" id="psb">
+    <div class="psb-decor psb-decor-1"></div>
+    <div class="psb-decor psb-decor-2"></div>
+    <div class="psb-decor psb-decor-3"></div>
+    <div class="container psb-content">
+      <div class="section-header reveal">
+        <h2 class="section-title">Penerimaan <span>Santri Baru</span></h2>
+        <p class="section-subtitle">Tahun Ajaran <span id="web_psb_tahun">2026/2027</span> telah dibuka. Mari bergabung menjadi bagian dari keluarga
+          besar Al Fathonah.</p>
+      </div>
+      <div class="psb-quote-card reveal">
+        <div class="psb-quote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg></div>
+        <p class="psb-quote-text arabic-accent">خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ</p>
+        <p class="psb-quote-translation">"Sebaik-baik kalian adalah yang mempelajari Al-Qur'an dan mengajarkannya."</p>
+        <p class="psb-quote-source">— HR. Bukhari</p>
+      </div>
+      <div class="psb-simple reveal">
+        <p class="psb-desc">Isi formulir pendaftaran online atau datang langsung ke sekretariat pesantren. Kami siap
+          menyambut putra-putri terbaik Anda untuk belajar dan menghafal Al-Qur'an bersama kami.</p>
+      </div>
+      <div class="psb-features reveal">
+        <div class="psb-feature">
+          <div class="psb-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M12 2l3 5v15H9V7z"></path></svg></div>
+          <span>Lingkungan Islami</span>
+        </div>
+        <div class="psb-feature">
+          <div class="psb-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg></div>
+          <span>Tahfidz 30 Juz</span>
+        </div>
+        <div class="psb-feature">
+          <div class="psb-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg></div>
+          <span>Pendidikan Formal</span>
+        </div>
+        <div class="psb-feature">
+          <div class="psb-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg></div>
+          <span>Pembinaan Akhlak</span>
+        </div>
+      </div>
+      <div class="psb-cta reveal">
+        <button class="btn btn-primary" id="btnOpenModal" onclick="openModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="12" y1="18" x2="12" y2="12" />
+            <line x1="9" y1="15" x2="15" y2="15" />
+          </svg>
+          Daftar Sekarang
+        </button>
+        <a href="https://wa.me/6281944150892?text=Assalamu'alaikum,%20saya%20ingin%20mendaftar%20di%20Pondok%20Pesantren%20Al%20Fathonah"
+          target="_blank" class="btn btn-wa">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+          </svg>
+          Hubungi via WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEDEKAH ONLINE -->
+  <section class="sedekah" id="sedekah">
+    <div class="container">
+      <div class="sedekah-grid">
+        <div class="sedekah-content reveal-left">
+          <h3>Mari Bersedekah untuk <span>Masa Depan</span> Para Santri</h3>
+          <p>Setiap kontribusi Anda akan menjadi amal jariyah yang tak terputus, membantu pendidikan para calon hafidz
+            Al-Qur'an dan pembangunan fasilitas pesantren.</p>
+          <div class="sedekah-verse">
+            <p class="arabic">مَنْ ذَا الَّذِي يُقْرِضُ اللَّهَ قَرْضًا حَسَنًا فَيُضَاعِفَهُ لَهُ أَضْعَافًا كَثِيرَةً
+            </p>
+            <p class="translation">"Siapakah yang mau memberi pinjaman kepada Allah, pinjaman yang baik, maka Allah akan
+              melipatgandakan pembayarannya." (QS. Al-Baqarah: 245)</p>
+          </div>
+        </div>
+        <div class="sedekah-cards reveal-right">
+          <div class="sedekah-account-card">
+            <div class="account-header">
+              <svg id="web_sedekah_default_svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32" style="color: var(--green-600);"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11m16-11v11M8 14v3m4-3v3m4-3v3"/></svg>
+              <img id="web_sedekah_logo" src="" alt="Bank Logo" style="height: 32px; display: none;">
+              <h4 id="web_sedekah_bank">Nama Bank</h4>
+            </div>
+            <div class="account-number" id="web_sedekah_rek">
+              0000 0000 0000
+            </div>
+            <div class="account-name" id="web_sedekah_nama">
+              A.N. Yayasan Al Fathonah
+            </div>
+            <p class="account-note">Semoga Allah membalas kebaikan Anda dengan pahala yang berlipat ganda.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <img src="img/logo.png" alt="Logo Al Fathonah" class="footer-logo-img">
+        <div class="footer-logo-text">Pondok Pesantren Al Fathonah</div>
+          </div>
+          <p>Mencetak generasi Qur'ani berakhlak mulia, berwawasan luas, dan siap menjadi pemimpin umat.</p>
+          <div class="footer-socials">
+            <a href="#" class="footer-social-link" id="web_sosmed_facebook" aria-label="Facebook">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
+              </svg>
+            </a>
+            <a href="#" class="footer-social-link" id="web_sosmed_instagram" aria-label="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" />
+                <circle cx="12" cy="12" r="5" />
+                <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none" />
+              </svg>
+            </a>
+            <a href="#" class="footer-social-link" id="web_sosmed_tiktok" aria-label="TikTok">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
+              </svg>
+            </a>
+            <a href="#" class="footer-social-link" id="web_sosmed_youtube" aria-label="YouTube">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M23 9.71a8.5 8.5 0 00-.91-4.13 2.92 2.92 0 00-1.72-1A78 78 0 0012 4.2a78 78 0 00-8.37.38 2.92 2.92 0 00-1.72 1A8.5 8.5 0 001 9.71a57 57 0 000 4.58 8.5 8.5 0 00.91 4.13 2.92 2.92 0 001.72 1A78 78 0 0012 19.8a78 78 0 008.37-.38 2.92 2.92 0 001.72-1 8.5 8.5 0 00.91-4.13 57 57 0 000-4.58zM9.74 14.85V8.55l5.57 3.15z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Tautan</h4>
+          <ul>
+            <li><a href="#beranda">Beranda</a></li>
+            <li><a href="#tentang">Tentang Kami</a></li>
+            <li><a href="#visi-misi">Visi & Misi</a></li>
+
+            <li><a href="#berita">Berita</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Program & Fasilitas</h4>
+          <ul>
+            <li><a href="#fasilitas">Sarana & Prasarana</a></li>
+            <li><a href="#kegiatan">Ekstrakurikuler</a></li>
+            <li><a href="#galeri">Galeri Foto</a></li>
+            <li><a href="#testimoni">Testimoni Wali Santri</a></li>
+            <li><a href="#psb">Pendaftaran & Brosur</a></li>
+            <li><a href="#sedekah">Sedekah Online</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Kontak</h4>
+          <ul class="footer-contact">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <span>Jl. HAS Mastra No. 04, RT. 003 RW. 003, Desa Kudukeras, Kec. Babakan, Kab. Cirebon, Jawa Barat, 45191.</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path
+                  d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+              </svg>
+              <span>0819 4415 0892</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              <span>ponpesalfathonah7@gmail.com</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Pondok Pesantren Al Fathonah. All rights reserved.</p>
+        <p class="footer-credit">Dibuat dengan <svg class="heart-icon pulse" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> oleh <strong>Asep Fahmi Maulana</strong></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Main Content End -->
+
+  <!-- Back to Top -->
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+      stroke-linejoin="round">
+      <polyline points="18 15 12 9 6 15" />
+    </svg>
+  </button>
+
+  <!-- BERITA MODAL -->
+  <div class="modal-overlay" id="beritaModalOverlay">
+    <div class="modal" id="beritaModal" style="max-width: 600px; padding: 0; overflow: hidden;">
+      <button class="modal-close" onclick="closeBeritaModal()" aria-label="Tutup" style="z-index: 10; background: rgba(0,0,0,0.5); color: white; border-radius: 50%; padding: 8px; top: 16px; right: 16px; position: absolute; border: none; cursor: pointer;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+      <div id="beritaModalImage" style="height: 250px; background: #e5e7eb; display: flex; align-items: center; justify-content: center; position: relative; background-size: cover; background-position: center;">
+        <!-- Image or Icon will go here -->
+      </div>
+      <div style="padding: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <span id="beritaModalKategori" class="berita-card-tag" style="margin: 0; display: inline-block; padding: 4px 14px; background: var(--green-50); color: var(--green-700); border-radius: 50px; font-size: 0.72rem; font-weight: 600;">Kategori</span>
+          <span id="beritaModalTanggal" style="font-size: 0.85rem; color: var(--gray-500); font-weight: 500;">Tanggal</span>
+        </div>
+        <h3 id="beritaModalJudul" style="font-size: 1.4rem; color: var(--gray-900); margin-bottom: 16px; line-height: 1.4; font-weight: 700;">Judul Berita</h3>
+        <div id="beritaModalKonten" style="font-size: 0.95rem; color: var(--gray-600); line-height: 1.8;">
+          Konten berita akan tampil di sini.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REGISTRATION MODAL -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="registrationModal">
+      <button class="modal-close" onclick="closeModal()" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+      <div class="modal-header">
+        <div class="modal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></div>
+        <h3>Formulir Pendaftaran Santri Baru</h3>
+        <p>Pondok Pesantren Al Fathonah â€” T.A. 2026/2027</p>
+      </div>
+      <form class="modal-form" id="registrationForm" onsubmit="submitForm(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="regNamaLengkap">1. Nama Lengkap <span style="color:#EF4444">*</span></label>
+            <input type="text" id="regNamaLengkap" placeholder="Masukkan nama lengkap" required>
+          </div>
+          <div class="form-group">
+            <label for="regNamaPanggilan">2. Nama Panggilan</label>
+            <input type="text" id="regNamaPanggilan" placeholder="Nama panggilan sehari-hari">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="regJenisKelamin">3. Jenis Kelamin <span style="color:#EF4444">*</span></label>
+            <select id="regJenisKelamin" required>
+              <option value="" disabled selected>Pilih jenis kelamin</option>
+              <option value="Laki-laki">Laki-laki</option>
+              <option value="Perempuan">Perempuan</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="regTempatTglLahir">4. Tempat, Tanggal Lahir <span style="color:#EF4444">*</span></label>
+            <input type="text" id="regTempatTglLahir" placeholder="Contoh: Cirebon, 01 Januari 2012" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="regAnakKe">5. Anak Ke-</label>
+            <input type="number" id="regAnakKe" placeholder="Contoh: 2" min="1">
+          </div>
+          <div class="form-group">
+            <label for="regJmlSaudara">6. Jumlah Saudara Kandung</label>
+            <input type="number" id="regJmlSaudara" placeholder="Contoh: 3" min="0">
+          </div>
+        </div>
+        <h4 style="margin: 12px 0 8px; color: var(--gray-700); font-size: 0.95rem;">7. Nama Orang Tua</h4>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="regNamaAyah">a. Ayah <span style="color:#EF4444">*</span></label>
+            <input type="text" id="regNamaAyah" placeholder="Nama lengkap ayah" required>
+          </div>
+          <div class="form-group">
+            <label for="regNamaIbu">b. Ibu <span style="color:#EF4444">*</span></label>
+            <input type="text" id="regNamaIbu" placeholder="Nama lengkap ibu" required>
+          </div>
+        </div>
+        <h4 style="margin: 12px 0 8px; color: var(--gray-700); font-size: 0.95rem;">8. Pekerjaan Orang Tua</h4>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="regPekerjaanAyah">a. Ayah</label>
+            <input type="text" id="regPekerjaanAyah" placeholder="Pekerjaan ayah">
+          </div>
+          <div class="form-group">
+            <label for="regPekerjaanIbu">b. Ibu</label>
+            <input type="text" id="regPekerjaanIbu" placeholder="Pekerjaan ibu">
+          </div>
+        </div>
+        <h4 style="margin: 12px 0 8px; color: var(--gray-700); font-size: 0.95rem;">9. Alamat Rumah</h4>
+        <div class="form-group">
+          <label for="regJalan">a. Jalan <span style="color:#EF4444">*</span></label>
+          <input type="text" id="regJalan" placeholder="Nama jalan dan nomor rumah" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="regDesa">b. Desa / Kelurahan</label>
+            <input type="text" id="regDesa" placeholder="Desa / Kelurahan">
+          </div>
+          <div class="form-group">
+            <label for="regKecamatan">c. Kecamatan</label>
+            <input type="text" id="regKecamatan" placeholder="Kecamatan">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="regKabProvinsi">d. Kab. / Provinsi</label>
+            <input type="text" id="regKabProvinsi" placeholder="Kabupaten / Provinsi">
+          </div>
+          <div class="form-group">
+            <label for="regNoTelp">e. No. Telp / WA <span style="color:#EF4444">*</span></label>
+            <input type="tel" id="regNoTelp" placeholder="08xxxxxxxxxx" required>
+          </div>
+        </div>
+        <h4 style="margin: 12px 0 8px; color: var(--gray-700); font-size: 0.95rem;">10. Asal Sekolah</h4>
+        <div class="form-group">
+          <label for="regNamaSekolah">a. Nama Sekolah</label>
+          <input type="text" id="regNamaSekolah" placeholder="Nama sekolah asal">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="regKelasSekolah">b. Kelas</label>
+            <input type="text" id="regKelasSekolah" placeholder="Contoh: 6 SD">
+          </div>
+          <div class="form-group">
+            <label for="regAlamatSekolah">c. Alamat Sekolah</label>
+            <input type="text" id="regAlamatSekolah" placeholder="Alamat sekolah asal">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-submit" style="margin-top: 16px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M22 2L11 13" />
+            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+          </svg>
+          Kirim Pendaftaran
+        </button>
+      </form>
+      <div class="modal-success" id="modalSuccess" style="display:none;">
+        <div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+        <h3>Pendaftaran Berhasil!</h3>
+        <p>Terima kasih telah mendaftar. Tim kami akan menghubungi Anda melalui WhatsApp untuk informasi selanjutnya.
+        </p>
+        <button class="btn btn-green" onclick="closeModal()">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGIN MODAL -->
+  <div class="modal-overlay" id="loginModalOverlay">
+    <div class="modal" id="loginModal" style="max-width: 420px; padding: 32px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px);">
+      <button class="modal-close" onclick="closeLoginModal()" aria-label="Tutup" style="top: 16px; right: 16px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+      <div class="modal-header" style="margin-bottom: 24px;">
+        <div class="modal-icon" style="background: var(--green-100); color: var(--green-600); border-radius: 16px; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <h3 id="authModalTitle" style="font-size: 1.4rem; color: var(--gray-900);">Selamat Datang</h3>
+        <p id="authModalSubtitle" style="color: var(--gray-500); font-size: 0.95rem;">Silakan masuk untuk melanjutkan</p>
+      </div>
+
+      <!-- FORM LOGIN -->
+      <form class="modal-form" id="loginForm" onsubmit="submitLogin(event)">
+        <div class="form-group" style="margin-bottom: 16px;">
+          <input type="text" id="loginUsername" placeholder="Email atau Username" required style="width: 100%; padding: 14px 16px; border: 1px solid var(--gray-200); border-radius: 12px; font-size: 0.95rem; background: var(--gray-50); outline: none; transition: all 0.2s;">
+        </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <div style="position: relative;">
+            <input type="password" id="loginPassword" placeholder="Password" required style="width: 100%; padding: 14px 40px 14px 16px; border: 1px solid var(--gray-200); border-radius: 12px; font-size: 0.95rem; background: var(--gray-50); outline: none; transition: all 0.2s;">
+            <span onclick="togglePasswordVisibility('loginPassword', this)" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--gray-400);">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </span>
+          </div>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; font-size: 0.85rem;">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--gray-600); font-weight: normal; margin: 0;">
+            <input type="checkbox" style="width: 16px; height: 16px; accent-color: var(--green-600);"> Ingat Saya
+          </label>
+          <a href="#" onclick="forgotPassword(event)" style="color: var(--green-600); font-weight: 500; text-decoration: none;">Lupa Password?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-submit" style="width: 100%; background: var(--green-600); padding: 14px; border-radius: 12px; font-weight: 600; font-size: 1rem; border: none; margin-bottom: 20px;">
+          Masuk
+        </button>
+
+        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+          <hr style="flex: 1; border: none; border-top: 1px solid var(--gray-200);">
+          <span style="padding: 0 16px; font-size: 0.8rem; color: var(--gray-400);">atau masuk dengan</span>
+          <hr style="flex: 1; border: none; border-top: 1px solid var(--gray-200);">
+        </div>
+
+        <button type="button" class="btn btn-secondary" style="width: 100%; background: white; color: #374151; border: 1px solid #E5E7EB; border-radius: 12px; display: flex; justify-content: center; padding: 12px; gap: 10px; margin-bottom: 24px; font-weight: 500;" onclick="loginWithGoogle()">
+          <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            <path d="M1 1h22v22H1z" fill="none"/>
+          </svg>
+          Lanjutkan dengan Google
+        </button>
+
+        <div style="text-align: center; font-size: 0.9rem; color: var(--gray-600);">
+          Belum punya akun? 
+          <a href="#" onclick="switchAuthTab('register')" style="color: var(--green-600); font-weight: 600; text-decoration: none;">Daftar Sekarang</a>
+        </div>
+      </form>
+
+      <!-- FORM REGISTER (Sembunyi by default) -->
+      <form class="modal-form" id="registerForm" onsubmit="submitRegister(event)" style="display: none;">
+        <div class="form-group">
+          <label for="registerNama">Nama Lengkap</label>
+          <input type="text" id="registerNama" placeholder="Masukkan nama lengkap" required>
+        </div>
+        <div class="form-group">
+          <label for="registerEmail">Email</label>
+          <input type="email" id="registerEmail" placeholder="Masukkan email aktif" required>
+        </div>
+        <div class="form-group">
+          <label for="registerPassword">Password</label>
+          <div style="position: relative;">
+            <input type="password" id="registerPassword" placeholder="Minimal 6 karakter" minlength="6" required style="width: 100%; padding-right: 36px; box-sizing: border-box;">
+            <span onclick="togglePasswordVisibility('registerPassword', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--gray-500); display: flex; align-items: center;">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-submit" style="align-self: center; width: 140px; background: #3B82F6; color: white; border: none; margin-top: 0; margin-bottom: 5px; display: flex; justify-content: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <line x1="19" y1="8" x2="19" y2="14" />
+            <line x1="22" y1="11" x2="16" y2="11" />
+          </svg>
+          Daftar
+        </button>
+
+        <button type="button" class="btn btn-secondary" style="align-self: center; width: auto; background: white; color: #374151; border: 1px solid #D1D5DB; display: flex; justify-content: center; padding: 10px 24px; gap: 10px; margin-bottom: 5px;" onclick="loginWithGoogle()">
+          <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            <path d="M1 1h22v22H1z" fill="none"/>
+          </svg>
+          Daftar menggunakan Google
+        </button>
+
+        <div style="text-align: center; margin-top: 10px; margin-bottom: 5px; font-size: 0.9rem; color: var(--gray-500);">
+          Sudah memiliki akun?
+        </div>
+        <button type="button" class="btn btn-secondary" style="align-self: center; width: 140px; background: #10B981; color: white; border: none; font-weight: 600; padding: 12px; display: flex; justify-content: center;" onclick="switchAuthTab('login')">
+          Login
+        </button>
+      </form>
+
+      <!-- FORM LUPA PASSWORD -->
+      <form class="modal-form" id="forgotPasswordForm" onsubmit="submitForgotPassword(event)" style="display: none;">
+        <div class="form-group" style="margin-bottom: 24px;">
+          <input type="email" id="forgotEmail" placeholder="Masukkan email terdaftar" required style="width: 100%; padding: 14px 16px; border: 1px solid var(--gray-200); border-radius: 12px; font-size: 0.95rem; background: var(--gray-50); outline: none; box-sizing: border-box; transition: all 0.2s;">
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-submit" style="width: 100%; background: var(--green-600); padding: 14px; border-radius: 12px; font-weight: 600; font-size: 1rem; border: none; margin-bottom: 20px;">
+          Kirim Link Pemulihan
+        </button>
+
+        <div style="text-align: center; font-size: 0.9rem; color: var(--gray-600);">
+          Kembali ke 
+          <a href="#" onclick="switchAuthTab('login')" style="color: var(--green-600); font-weight: 600; text-decoration: none;">Halaman Login</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL INFORMASI SANTRI (PORTAL WALI SANTRI - VIEW ONLY) -->
+  <div id="portalSantriModal" class="portal-modal-overlay">
+    <div class="portal-modal-container">
+      <!-- Header -->
+      <div class="portal-modal-header">
+        <div class="portal-header-left">
+          <div class="portal-avatar-wrap" id="portalAvatarWrap">
+            <span class="portal-avatar-initials">S</span>
+          </div>
+          <div class="portal-header-meta">
+            <h3 id="portalModalHeaderTitle">Nama Santri</h3>
+            <div class="portal-header-tags" id="portalModalHeaderTags">
+              <span class="portal-meta-tag">NIS: -</span>
+              <span class="portal-meta-tag">Kelas: -</span>
+            </div>
+          </div>
+        </div>
+        <div class="portal-header-actions">
+          <button type="button" class="portal-btn-print" id="portalBtnBackSearch" onclick="openPortalSearchModal()" style="display: none;" title="Kembali ke Pencarian">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <span>Cari Lain</span>
+          </button>
+          <button type="button" class="portal-btn-print" id="portalBtnPrint" onclick="printPortalStudentInfo()" style="display: none;" title="Cetak Lembar Informasi Santri">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+            <span>Cetak / PDF</span>
+          </button>
+          <button type="button" class="portal-btn-icon-head" onclick="closePortalModal()" title="Tutup Modal" aria-label="Tutup">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Readonly Notice Ribbon -->
+      <div class="portal-readonly-notice">
+        <div class="portal-readonly-notice-text">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <span>Mode Hanya Lihat (Khusus Wali Santri) — Terhubung langsung ke data resmi pesantren</span>
+        </div>
+        <span style="font-weight: 600; color: #1E40AF; font-size: 0.78rem;">Al-Fathonah System</span>
+      </div>
+
+      <!-- Segmented Tabs Navigation -->
+      <div style="padding: 16px 28px 0 28px; background: #FFFFFF;">
+        <div class="portal-tabs-nav" id="portalTabsNav">
+          <button type="button" class="portal-tab-btn active" id="portalTabBtnSpp" onclick="switchPortalTab('spp')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+            <span>Status SPP</span>
+          </button>
+          <button type="button" class="portal-tab-btn" id="portalTabBtnJajan" onclick="switchPortalTab('jajan')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><line x1="12" y1="6" x2="12" y2="18"></line></svg>
+            <span>Saldo Uang Jajan</span>
+          </button>
+          <button type="button" class="portal-tab-btn" id="portalTabBtnHafalan" onclick="switchPortalTab('hafalan')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+            <span>Setoran Hafalan</span>
+          </button>
+          <button type="button" class="portal-tab-btn" id="portalTabBtnBiodata" onclick="switchPortalTab('biodata')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>Biodata Santri</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body Content -->
+      <div class="portal-modal-body" id="portalModalBodyContent">
+        <!-- Content will be injected dynamically by portal-santri.js -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="portal-modal-footer">
+        <div class="portal-footer-note">
+          Jika terdapat ketidaksesuaian data, silakan hubungi bagian administrasi & bendahara Pondok Pesantren Al-Fathonah.
+        </div>
+        <button type="button" class="portal-btn-close-modal" onclick="closePortalModal()">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="script.js"></script>
+  <script src="fetch-cms.js"></script>
+  <script src="portal-santri.js"></script>
+</body>
+</html>
