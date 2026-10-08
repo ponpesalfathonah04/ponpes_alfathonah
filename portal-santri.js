@@ -7,8 +7,33 @@
 (function () {
   'use strict';
 
-  // Kode Keamanan Resmi yang ditentukan untuk Wali Santri
-  const PORTAL_SECURITY_CODE = 'PPAFKUDUKERAS';
+  // Hash kriptografis SHA-256 dari kode keamanan resmi wali santri
+  // Disimpan dalam bentuk one-way cryptographic hash agar kode asli TIDAK PERNAH terekspos saat di-Inspect / DevTools
+  const PORTAL_SECURITY_HASH = '5df50a8440326124faba547e055fa444222a0dc09acce7a9d4423450c9b11f8a';
+
+  // Helper komputasi hash SHA-256 menggunakan Web Crypto API browser
+  async function computeSha256(str) {
+    if (!str) return '';
+    try {
+      const msgBuffer = new TextEncoder().encode(String(str).trim().toUpperCase());
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch (e) {
+      return '';
+    }
+  }
+
+  // Helper sensor NIK (menjaga privasi kependudukan saat di-inspect / screenshot)
+  function maskNik(nik) {
+    if (!nik) return '-';
+    const s = String(nik).trim();
+    if (s.length < 8) return s;
+    const start = s.slice(0, 6);
+    const end = s.slice(-4);
+    const maskedLength = Math.max(0, s.length - 10);
+    return `${start}${'*'.repeat(maskedLength)}${end}`;
+  }
 
   // State
   let currentActiveStudent = null;
@@ -143,12 +168,14 @@
     const tabsNav = document.getElementById('portalTabsNav');
     const printBtn = document.getElementById('portalBtnPrint');
     const btnBackSearch = document.getElementById('portalBtnBackSearch');
+    const tabsWrapper = document.getElementById('portalTabsWrapper');
 
     if (!modal || !modalBody) return;
 
     if (printBtn) printBtn.style.display = 'none';
     if (btnBackSearch) btnBackSearch.style.display = 'none';
     if (tabsNav) tabsNav.style.display = 'none';
+    if (tabsWrapper) tabsWrapper.style.display = 'none';
 
     if (avatarWrap) {
       avatarWrap.innerHTML = `<span class="portal-avatar-initials">🏛️</span>`;
@@ -277,8 +304,9 @@
       return;
     }
 
-    // 2. Validasi Kode Keamanan
-    if (kode.toUpperCase() !== PORTAL_SECURITY_CODE) {
+    // 2. Validasi Kode Keamanan dengan Cryptographic Hash (Aman dari Inspect DevTools)
+    const inputHash = await computeSha256(kode);
+    if (inputHash !== PORTAL_SECURITY_HASH) {
       alert('⚠️ Kode Keamanan Salah!\n\nPastikan Anda memasukkan kode keamanan wali santri yang valid. Hubungi pihak tata usaha/pengurus pesantren jika belum memiliki kode akses.');
       kodeInput.focus();
       return;
@@ -301,11 +329,11 @@
         throw new Error('Koneksi sistem belum siap. Silakan refresh halaman.');
       }
 
-      // Cari berdasarkan NIS, NIK, atau Nama (case-insensitive substring)
+      // Cari berdasarkan NIS, NIK, atau Nama (pilih kolom spesifik agar data privat tidak bocor ke network response saat di-inspect)
       const cleanKw = keyword.replace(/[%_]/g, '');
       const { data: santriList, error } = await sb
         .from('data_induk_santri')
-        .select('*, master_kelas(nama_kelas)')
+        .select('id, nama, nis, nik, jenis_kelamin, kelas_id, status_mondok, tempat_lahir, tanggal_lahir, usia, sekolah, tanggal_masuk, alamat, foto_3x4, master_kelas(nama_kelas)')
         .or(`nis.ilike.%${cleanKw}%,nik.ilike.%${cleanKw}%,nama.ilike.%${cleanKw}%`)
         .order('nama', { ascending: true })
         .limit(15);
@@ -487,18 +515,20 @@
 
     if (headerTags) {
       headerTags.innerHTML = `
-        <span class="portal-meta-tag">NIS: <strong>${student.nis || '-'}</strong></span>
-        ${student.nik ? `<span class="portal-meta-tag">NIK: ${student.nik}</span>` : ''}
-        <span class="portal-meta-tag">Kelas: ${kls}</span>
-        <span class="portal-meta-tag" style="background:#10B981; color:#FFFFFF;">${statusMondok}</span>
+        <span class="portal-meta-tag">NIS: <strong>${escapeHtml(student.nis || '-')}</strong></span>
+        ${student.nik ? `<span class="portal-meta-tag">NIK: ${escapeHtml(maskNik(student.nik))}</span>` : ''}
+        <span class="portal-meta-tag">Kelas: ${escapeHtml(kls)}</span>
+        <span class="portal-meta-tag" style="background:#10B981; color:#FFFFFF;">${escapeHtml(statusMondok)}</span>
       `;
     }
 
     const printBtn = document.getElementById('portalBtnPrint');
     const btnBackSearch = document.getElementById('portalBtnBackSearch');
+    const tabsWrapper = document.getElementById('portalTabsWrapper');
     if (printBtn) printBtn.style.display = 'inline-flex';
     if (btnBackSearch) btnBackSearch.style.display = 'inline-flex';
     if (tabsNav) tabsNav.style.display = 'flex';
+    if (tabsWrapper) tabsWrapper.style.display = 'block';
 
     if (modalBody) {
       modalBody.innerHTML = `
@@ -978,7 +1008,7 @@
 
         <div class="portal-profile-item">
           <div class="portal-profile-label">Nomor Induk Kependudukan (NIK)</div>
-          <div class="portal-profile-val">${escapeHtml(s.nik || '-')}</div>
+          <div class="portal-profile-val">${escapeHtml(maskNik(s.nik))}</div>
         </div>
 
         <div class="portal-profile-item">
@@ -1033,8 +1063,14 @@
       const btn = document.getElementById('portalTabBtn' + capitalize(t));
       const content = document.getElementById('portalTab' + capitalize(t));
       if (btn) {
-        if (t === tabId) btn.classList.add('active');
-        else btn.classList.remove('active');
+        if (t === tabId) {
+          btn.classList.add('active');
+          try {
+            btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          } catch (e) {}
+        } else {
+          btn.classList.remove('active');
+        }
       }
       if (content) {
         if (t === tabId) content.classList.add('active');
