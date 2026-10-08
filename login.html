@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Login - Pondok Pesantren Al-Fathonah</title>
   
   <!-- PWA Meta Tags -->
@@ -11,6 +11,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Al-Fathonah">
+  <meta name="mobile-web-app-capable" content="yes">
   <link rel="apple-touch-icon" href="img/logo.png">
   <link rel="icon" type="image/png" href="img/logo.png">
 
@@ -43,15 +44,154 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
     body {
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       align-items: center;
       justify-content: center;
       background: linear-gradient(145deg, #044E39 0%, #065F46 45%, #0F766E 100%);
       padding: 20px;
+      padding: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 20px) env(safe-area-inset-bottom, 20px) env(safe-area-inset-left, 20px);
       position: relative;
       overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    /* ===== SPLASH SCREEN ===== */
+    .splash-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: linear-gradient(145deg, #044E39 0%, #065F46 45%, #0F766E 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    .splash-screen.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .splash-logo-wrapper {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+
+    /* Pulse ring behind logo */
+    .splash-logo-ring {
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      border: 2.5px solid rgba(16, 185, 129, 0.35);
+      animation: splashRingPulse 2s ease-in-out infinite;
+    }
+    .splash-logo-ring:nth-child(2) {
+      inset: -24px;
+      border-color: rgba(16, 185, 129, 0.18);
+      animation-delay: 0.4s;
+    }
+
+    @keyframes splashRingPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.08); opacity: 0.5; }
+    }
+
+    .splash-logo-img {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
+      border-radius: 26px;
+      background: rgba(255,255,255,0.12);
+      padding: 14px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+      animation: splashLogoEntry 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      filter: drop-shadow(0 4px 20px rgba(16, 185, 129, 0.3));
+    }
+
+    @keyframes splashLogoEntry {
+      0% { opacity: 0; transform: scale(0.6) translateY(20px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .splash-text {
+      text-align: center;
+      animation: splashTextEntry 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+      opacity: 0;
+    }
+
+    @keyframes splashTextEntry {
+      0% { opacity: 0; transform: translateY(15px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .splash-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .splash-subtitle {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .splash-loader {
+      margin-top: 36px;
+      width: 40px;
+      height: 40px;
+      position: relative;
+      animation: splashLoaderEntry 0.5s ease 0.6s forwards;
+      opacity: 0;
+    }
+
+    @keyframes splashLoaderEntry {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    .splash-loader::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 3px solid rgba(255,255,255,0.15);
+      border-top-color: #10B981;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+
+    /* Ambient particles on splash */
+    .splash-particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.15);
+      pointer-events: none;
+    }
+    .splash-particle:nth-child(1) { width: 80px; height: 80px; top: 8%; left: 10%; animation: floatSplash 6s ease-in-out infinite; }
+    .splash-particle:nth-child(2) { width: 120px; height: 120px; bottom: 12%; right: 8%; animation: floatSplash 8s ease-in-out infinite 1s; }
+    .splash-particle:nth-child(3) { width: 60px; height: 60px; top: 40%; right: 15%; animation: floatSplash 7s ease-in-out infinite 2s; }
+
+    @keyframes floatSplash {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+      50% { transform: translateY(-20px) scale(1.1); opacity: 0.15; }
     }
 
     /* Ambient background circles */
@@ -84,6 +224,12 @@
       position: relative;
       z-index: 10;
       animation: fadeInScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+      animation-delay: 0.1s;
+    }
+
+    .login-wrapper.show {
+      animation: fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     @keyframes fadeInScale {
@@ -127,6 +273,8 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
     }
 
     .brand-header h1 {
@@ -293,7 +441,29 @@
 </head>
 <body>
 
-  <div class="login-wrapper">
+  <!-- ===== SPLASH SCREEN ANIMASI ===== -->
+  <div class="splash-screen" id="splashScreen">
+    <!-- Ambient Particles -->
+    <div class="splash-particle"></div>
+    <div class="splash-particle"></div>
+    <div class="splash-particle"></div>
+
+    <div class="splash-logo-wrapper">
+      <div class="splash-logo-ring"></div>
+      <div class="splash-logo-ring"></div>
+      <img src="img/logo.png" alt="Logo Al-Fathonah" class="splash-logo-img">
+    </div>
+
+    <div class="splash-text">
+      <div class="splash-title">Al-Fathonah</div>
+      <div class="splash-subtitle">Pondok Pesantren Al-Fathonah</div>
+    </div>
+
+    <div class="splash-loader"></div>
+  </div>
+
+  <!-- ===== LOGIN FORM ===== -->
+  <div class="login-wrapper" id="loginWrapper" style="opacity:0;">
     <div class="login-card">
       <div class="brand-header">
         <div class="brand-logo">
@@ -355,7 +525,25 @@
       return _supabase;
     }
 
-    // Auto redirect if already logged in
+    // ===== SPLASH SCREEN LOGIC =====
+    const splash = document.getElementById('splashScreen');
+    const loginWrapper = document.getElementById('loginWrapper');
+    const SPLASH_MIN_DURATION = 2200; // Minimal tampil 2.2 detik
+    let splashStartTime = Date.now();
+
+    function hideSplash() {
+      const elapsed = Date.now() - splashStartTime;
+      const remaining = Math.max(0, SPLASH_MIN_DURATION - elapsed);
+
+      setTimeout(() => {
+        splash.classList.add('hide');
+        // Tampilkan form login dengan animasi
+        loginWrapper.style.opacity = '';
+        loginWrapper.classList.add('show');
+      }, remaining);
+    }
+
+    // Auto redirect if already logged in, or show login form
     document.addEventListener('DOMContentLoaded', async () => {
       // Register Service Worker for PWA
       if ('serviceWorker' in navigator) {
@@ -367,13 +555,25 @@
         try {
           const { data: { session } } = await sb.auth.getSession();
           if (session) {
+            // Sudah login, langsung redirect ke dashboard
             window.location.replace('dashboard.html');
+            return;
           }
         } catch (e) {
           console.log('Session check:', e);
         }
       }
+
+      // Belum login, tampilkan form login setelah splash selesai
+      hideSplash();
     });
+
+    // Fallback: jika Supabase gagal load, tetap tampilkan form login
+    setTimeout(() => {
+      if (!splash.classList.contains('hide')) {
+        hideSplash();
+      }
+    }, 4000);
 
     function togglePasswordVis() {
       const inp = document.getElementById('appPassword');
