@@ -33,6 +33,26 @@ async function loadLandingPageCMS() {
       if(document.getElementById('web_ketua_jabatan')) document.getElementById('web_ketua_jabatan').innerText = settings.ketua_jabatan || 'Ketua Yayasan';
       if(document.getElementById('web_ketua_sambutan')) document.getElementById('web_ketua_sambutan').innerText = settings.ketua_sambutan;
       
+      // Wakil Ketua
+      const wakilFoto = settings.wakil_ketua_foto || localStorage.getItem('cms_wakil_ketua_foto');
+      const wakilNama = settings.wakil_ketua_nama || localStorage.getItem('cms_wakil_ketua_nama');
+      const wakilJabatan = settings.wakil_ketua_jabatan || localStorage.getItem('cms_wakil_ketua_jabatan');
+      const wakilSambutan = settings.wakil_ketua_sambutan || localStorage.getItem('cms_wakil_ketua_sambutan');
+
+      if(document.getElementById('web_wakil_ketua_foto') && wakilFoto) {
+        document.getElementById('web_wakil_ketua_foto').src = convertGDriveUrl(wakilFoto);
+      }
+      if(document.getElementById('web_wakil_ketua_nama') && wakilNama) {
+        document.getElementById('web_wakil_ketua_nama').innerText = wakilNama;
+      }
+      if(document.getElementById('web_wakil_ketua_jabatan')) {
+        document.getElementById('web_wakil_ketua_jabatan').innerText = wakilJabatan || 'Wakil Ketua Yayasan';
+      }
+      if(document.getElementById('web_wakil_ketua_sambutan') && wakilSambutan) {
+        document.getElementById('web_wakil_ketua_sambutan').innerText = wakilSambutan;
+      }
+
+      // Pengasuh
       if(document.getElementById('web_pengasuh_foto') && settings.pengasuh_foto) {
         document.getElementById('web_pengasuh_foto').src = convertGDriveUrl(settings.pengasuh_foto);
       }
