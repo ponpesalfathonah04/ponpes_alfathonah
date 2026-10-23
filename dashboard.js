@@ -3010,10 +3010,6 @@ async function editLastTransaksi(santriId, santriNama) {
     document.getElementById('transaksi_keterangan').value = t.keterangan || '';
     document.getElementById('transaksiModalTitle').textContent = `Edit Pembayaran Terakhir — ${santriNama}`;
 
-    // Tampilkan tombol Hapus di modal saat edit
-    const btnDel = document.getElementById('btnHapusTransaksiModal');
-    if (btnDel) btnDel.style.display = 'flex';
-
     // Sembunyikan info panel saat edit
     const infoPanel = document.getElementById('transaksiInfoPembayaran');
     if (infoPanel) infoPanel.style.display = 'none';
@@ -3400,9 +3396,6 @@ function openTransaksiModal(santriId, santriNama, jenis) {
   document.getElementById('transaksi_nama_santri').value = santriNama;
   document.getElementById('transaksi_tgl').value = new Date().toISOString().split('T')[0];
 
-  const btnDelModal = document.getElementById('btnHapusTransaksiModal');
-  if (btnDelModal) btnDelModal.style.display = 'none';
-
   const isJajan = currentTagihanData ? currentTagihanData.kategori === 'Uang Jajan' : false;
   const quickRow = document.getElementById('transaksiJajanQuickRow');
   const cbTambahan = document.getElementById('transaksiIsTambahanJajan');
@@ -3498,46 +3491,6 @@ function toggleTambahanJajanCheckbox(cb) {
 
 function closeTransaksiModal() {
   document.getElementById('transaksiModalOverlay').classList.remove('active');
-  const btnDel = document.getElementById('btnHapusTransaksiModal');
-  if (btnDel) btnDel.style.display = 'none';
-}
-
-async function deleteCurrentTransaksiFromModal() {
-  const id = document.getElementById('transaksiId').value;
-  const santriId = document.getElementById('transaksiSantriId').value;
-  const santriNama = document.getElementById('transaksi_nama_santri').value;
-  const nominalVal = document.getElementById('transaksi_nominal').value;
-
-  if (!id) return;
-
-  const ok = await showCustomConfirm(
-    'Hapus Transaksi',
-    `Yakin ingin menghapus transaksi pembayaran sebesar Rp ${nominalVal} untuk ${santriNama}? Total pembayaran santri ini akan otomatis disesuaikan.`,
-    { confirmText: 'Ya, Hapus', type: 'danger' }
-  );
-  if (!ok) return;
-
-  const sb = getSupabase();
-  try {
-    const { error } = await sb.from('pembayaran_bulanan').delete().eq('id', id);
-    if (error) throw error;
-
-    showToast('Transaksi berhasil dihapus', 'success');
-    closeTransaksiModal();
-
-    if (document.getElementById('riwayatModalOverlay')?.classList.contains('active') && santriId) {
-      loadRiwayat(santriId);
-    }
-    if (currentTagihanId) {
-      loadDetailTagihan(currentTagihanId);
-    }
-    if (typeof loadRiwayatKeuangan === 'function') {
-      loadRiwayatKeuangan();
-    }
-  } catch (err) {
-    console.error(err);
-    showToast('Gagal menghapus transaksi: ' + (err.message || 'Error'), 'error');
-  }
 }
 
 document.getElementById('transaksiForm')?.addEventListener('submit', async (e) => {
@@ -3677,8 +3630,6 @@ function editTransaksi(id) {
   document.getElementById('transaksi_keterangan').value = t.keterangan || '';
   
   document.getElementById('transaksiModalTitle').textContent = 'Edit Transaksi';
-  const btnDel = document.getElementById('btnHapusTransaksiModal');
-  if (btnDel) btnDel.style.display = 'flex';
   // Sembunyikan info panel saat edit (karena konteks berbeda)
   const infoPanel = document.getElementById('transaksiInfoPembayaran');
   if (infoPanel) infoPanel.style.display = 'none';
