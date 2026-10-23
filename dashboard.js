@@ -2874,13 +2874,16 @@ function filterSantriTagihan() {
         <td style="color:#DC2626; font-weight:600;">${formatRupiah(s.totalPengeluaran)}</td>
         <td style="${saldoStyle}">${formatRupiah(s.saldo)}</td>
         <td>
-          <div style="display:flex; gap:6px; align-items:center;">
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
             <button class="btn-action" style="width:32px; height:32px; background:#D1FAE5; color:#065F46; border:1px solid #34D399; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;" onclick="openTransaksiModal('${s.id}', '${s.nama.replace(/'/g,"\\'")}', 'Pemasukan')" title="Catat Deposit Uang Jajan">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             </button>
             <button class="btn-action" style="width:32px; height:32px; background:#FEE2E2; color:#991B1B; border:1px solid #F87171; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;" onclick="openTransaksiModal('${s.id}', '${s.nama.replace(/'/g,"\\'")}', 'Pengeluaran')" title="Catat Penarikan Uang Jajan">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             </button>
+            ${s.totalPemasukan > 0 || s.totalPengeluaran > 0 ? `<button class="btn-action btn-edit" style="width:32px; height:32px; background:#FEF3C7; color:#92400E; border:1px solid #FCD34D; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;" onclick="editLastTransaksi('${s.id}', '${s.nama.replace(/'/g,"\\'")}')" title="Edit Pembayaran Terakhir">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>` : ''}
             <button class="btn-action btn-detail" style="width:32px; height:32px; background:#F3F4F6; color:#374151; border:1px solid #D1D5DB; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;" onclick="openRiwayatModal('${s.id}', '${s.nama.replace(/'/g,"\\'")}')" title="Lihat Riwayat Transaksi Jajan">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
             </button>
@@ -2904,10 +2907,13 @@ function filterSantriTagihan() {
         <td>${s.tglTerakhir}</td>
         <td>${statusPartisipasi}</td>
         <td>
-          <div style="display:flex; gap:6px; align-items:center;">
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
             <button class="btn-action" style="width:32px; height:32px; background:#DBEAFE; color:#1E3A8A; border:1px solid #93C5FD; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;" onclick="openTransaksiModal('${s.id}', '${s.nama.replace(/'/g,"\\'")}', 'Pemasukan')" title="Catat Infaq / Sedekah">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
             </button>
+            ${s.totalPemasukan > 0 ? `<button class="btn-action btn-edit" style="width:32px; height:32px; background:#FEF3C7; color:#92400E; border:1px solid #FCD34D; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;" onclick="editLastTransaksi('${s.id}', '${s.nama.replace(/'/g,"\\'")}')" title="Edit Pembayaran Terakhir">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>` : ''}
             <button class="btn-action btn-detail" style="width:32px; height:32px; background:#F3F4F6; color:#374151; border:1px solid #D1D5DB; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;" onclick="openRiwayatModal('${s.id}', '${s.nama.replace(/'/g,"\\'")}')" title="Lihat Riwayat Infaq">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
             </button>
@@ -2931,10 +2937,13 @@ function filterSantriTagihan() {
         <td>${s.tglTerakhir}</td>
         <td style="${kurangStyle}">${kurangText}</td>
         <td>
-          <div style="display:flex; gap:6px; align-items:center;">
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
             <button class="btn-action" style="width:32px; height:32px; background:#DBEAFE; color:#1E3A8A; border:1px solid #93C5FD; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;" onclick="openTransaksiModal('${s.id}', '${s.nama.replace(/'/g,"\\'")}', 'Pemasukan')" title="Catat Pembayaran Tagihan">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
             </button>
+            ${s.totalPemasukan > 0 ? `<button class="btn-action btn-edit" style="width:32px; height:32px; background:#FEF3C7; color:#92400E; border:1px solid #FCD34D; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;" onclick="editLastTransaksi('${s.id}', '${s.nama.replace(/'/g,"\\'")}')" title="Edit Pembayaran Terakhir">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>` : ''}
             <button class="btn-action btn-detail" style="width:32px; height:32px; background:#F3F4F6; color:#374151; border:1px solid #D1D5DB; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;" onclick="openRiwayatModal('${s.id}', '${s.nama.replace(/'/g,"\\'")}')" title="Lihat Riwayat Pembayaran">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
             </button>
@@ -2951,6 +2960,59 @@ function filterSantriTagihan() {
   const masterCb = document.getElementById('checkAllSantriTagihan');
   if (masterCb) masterCb.checked = false;
   updateSelectedSantriTagihanCount();
+}
+
+async function editLastTransaksi(santriId, santriNama) {
+  const sb = getSupabase();
+  if (!sb) return;
+
+  showToast('Memuat data transaksi terakhir...', 'info');
+
+  try {
+    const { data, error } = await sb.from('pembayaran_bulanan')
+      .select('*')
+      .eq('tagihan_id', currentTagihanId)
+      .eq('santri_id', santriId)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      showToast('Belum ada transaksi untuk santri ini', 'warning');
+      return;
+    }
+
+    const t = data[0];
+    
+    // Simpan ke allTransaksiSantri agar submit handler bisa pakai
+    allTransaksiSantri = data;
+
+    document.getElementById('transaksiModalOverlay').classList.add('active');
+    document.getElementById('transaksiId').value = t.id;
+    document.getElementById('transaksiSantriId').value = t.santri_id;
+    document.getElementById('transaksiJenis').value = t.jenis_transaksi;
+    document.getElementById('transaksi_nama_santri').value = santriNama;
+    document.getElementById('transaksi_tgl').value = t.tgl_bayar;
+    document.getElementById('transaksi_nominal').value = t.nominal ? Number(t.nominal).toLocaleString('id-ID') : '';
+    document.getElementById('transaksi_metode').value = t.metode || 'Tunai';
+    document.getElementById('transaksi_keterangan').value = t.keterangan || '';
+    document.getElementById('transaksiModalTitle').textContent = `Edit Pembayaran Terakhir — ${santriNama}`;
+
+    // Sembunyikan info panel saat edit
+    const infoPanel = document.getElementById('transaksiInfoPembayaran');
+    if (infoPanel) infoPanel.style.display = 'none';
+
+    // Tampilkan quick row jajan jika relevan
+    const isJajan = currentTagihanData ? currentTagihanData.kategori === 'Uang Jajan' : false;
+    const quickRow = document.getElementById('transaksiJajanQuickRow');
+    if (quickRow) quickRow.style.display = (isJajan && t.jenis_transaksi === 'Pengeluaran') ? 'block' : 'none';
+    document.getElementById('group_transaksi_keterangan').style.display = 'block';
+
+  } catch (err) {
+    console.error(err);
+    showToast('Gagal memuat transaksi terakhir: ' + (err.message || 'Error'), 'error');
+  }
 }
 
 function toggleAllSantriTagihan(masterCb) {
