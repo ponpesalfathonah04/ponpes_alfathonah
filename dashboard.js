@@ -243,10 +243,7 @@ function initBackPrevention() {
       return;
     }
 
-    // 4. Jika sudah di dashboard utama, ingatkan pengguna untuk menggunakan tombol Logout
-    if (typeof showToast === 'function') {
-      showToast('Gunakan tombol Keluar di menu samping untuk logout', 'info');
-    }
+    // 4. Jika sudah di dashboard utama, tetap di dashboard utama tanpa toast yang mengganggu
   });
 }
 
@@ -3287,19 +3284,62 @@ function openTransaksiModal(santriId, santriNama, jenis) {
   const cbTambahan = document.getElementById('transaksiIsTambahanJajan');
   if (quickRow) quickRow.style.display = (isJajan && jenis === 'Pengeluaran') ? 'block' : 'none';
   if (cbTambahan) cbTambahan.checked = false;
-  
+
+  // Info pembayaran panel
+  const infoPanel = document.getElementById('transaksiInfoPembayaran');
+  const infoTotal = document.getElementById('infoTotalTagihan');
+  const infoSudah = document.getElementById('infoSudahDibayar');
+  const infoSisa = document.getElementById('infoSisaTagihan');
+  const infoLunas = document.getElementById('infoStatusLunas');
+
   if (isJajan) {
     document.getElementById('transaksiModalTitle').textContent = jenis === 'Pemasukan' ? 'Catat Deposit Jajan' : 'Catat Penarikan Uang Jajan';
     document.getElementById('group_transaksi_keterangan').style.display = 'block';
     document.getElementById('transaksi_nominal').value = '';
+    if (infoPanel) infoPanel.style.display = 'none';
   } else {
     const namaTagihan = (currentTagihanData && currentTagihanData.kategori === 'Lainnya' && currentTagihanData.keterangan)
       ? currentTagihanData.keterangan
       : (currentTagihanData ? currentTagihanData.kategori : '');
     document.getElementById('transaksiModalTitle').textContent = 'Catat Pembayaran ' + namaTagihan;
-    const defaultNom = (currentTagihanData && currentTagihanData.nominal_wajib) ? Number(currentTagihanData.nominal_wajib).toLocaleString('id-ID') : '';
-    document.getElementById('transaksi_nominal').value = defaultNom;
     document.getElementById('group_transaksi_keterangan').style.display = 'block';
+
+    const isWajib = currentTagihanData ? (currentTagihanData.is_wajib !== false) : true;
+    const nomWajib = (currentTagihanData && currentTagihanData.nominal_wajib) ? Number(currentTagihanData.nominal_wajib) : 0;
+
+    // Cari data pembayaran santri dari allSantriTagihan
+    const santriData = (allSantriTagihan || []).find(s => s.id === santriId);
+    const sudahDibayar = santriData ? (santriData.totalPemasukan || 0) : 0;
+
+    if (isWajib && nomWajib > 0) {
+      // Tampilkan info ringkasan pembayaran
+      const sisaTagihan = Math.max(0, nomWajib - sudahDibayar);
+
+      if (infoPanel) infoPanel.style.display = 'block';
+      if (infoTotal) infoTotal.textContent = formatRupiah(nomWajib);
+      if (infoSudah) infoSudah.textContent = formatRupiah(sudahDibayar);
+      if (infoSisa) {
+        infoSisa.textContent = sisaTagihan > 0 ? formatRupiah(sisaTagihan) : 'Rp 0 (Lunas)';
+        infoSisa.style.color = sisaTagihan > 0 ? '#DC2626' : '#059669';
+      }
+      if (infoLunas) infoLunas.style.display = sisaTagihan <= 0 ? 'block' : 'none';
+
+      // Auto-fill nominal dengan sisa tagihan (bisa diedit manual)
+      const defaultNom = sisaTagihan > 0 ? sisaTagihan : nomWajib;
+      document.getElementById('transaksi_nominal').value = Number(defaultNom).toLocaleString('id-ID');
+    } else {
+      // Sukarela / Infaq — tampilkan info jika sudah pernah bayar
+      if (sudahDibayar > 0 && infoPanel) {
+        infoPanel.style.display = 'block';
+        if (infoTotal) infoTotal.textContent = 'Seikhlasnya';
+        if (infoSudah) infoSudah.textContent = formatRupiah(sudahDibayar);
+        if (infoSisa) { infoSisa.textContent = 'Seikhlasnya'; infoSisa.style.color = '#6B7280'; }
+        if (infoLunas) infoLunas.style.display = 'none';
+      } else {
+        if (infoPanel) infoPanel.style.display = 'none';
+      }
+      document.getElementById('transaksi_nominal').value = '';
+    }
   }
 }
 
@@ -3463,6 +3503,9 @@ function editTransaksi(id) {
   document.getElementById('transaksi_keterangan').value = t.keterangan || '';
   
   document.getElementById('transaksiModalTitle').textContent = 'Edit Transaksi';
+  // Sembunyikan info panel saat edit (karena konteks berbeda)
+  const infoPanel = document.getElementById('transaksiInfoPembayaran');
+  if (infoPanel) infoPanel.style.display = 'none';
 }
 
 async function deleteTransaksi(id, santriId) {
