@@ -3380,9 +3380,17 @@ function openTransaksiModal(santriId, santriNama, jenis) {
       if (infoPanel) infoPanel.style.display = 'block';
       if (infoTotal) infoTotal.textContent = formatRupiah(nomWajib);
       if (infoSudah) infoSudah.textContent = formatRupiah(sudahDibayar);
+      const cardSisaEl = document.querySelector('.transaksi-info-card.card-sisa');
       if (infoSisa) {
         infoSisa.textContent = sisaTagihan > 0 ? formatRupiah(sisaTagihan) : 'Rp 0 (Lunas)';
         infoSisa.style.color = sisaTagihan > 0 ? '#DC2626' : '#059669';
+      }
+      if (cardSisaEl) {
+        if (sisaTagihan <= 0) {
+          cardSisaEl.classList.add('is-lunas');
+        } else {
+          cardSisaEl.classList.remove('is-lunas');
+        }
       }
       if (infoLunas) infoLunas.style.display = sisaTagihan <= 0 ? 'block' : 'none';
 
@@ -3391,6 +3399,8 @@ function openTransaksiModal(santriId, santriNama, jenis) {
       document.getElementById('transaksi_nominal').value = Number(defaultNom).toLocaleString('id-ID');
     } else {
       // Sukarela / Infaq — tampilkan info jika sudah pernah bayar
+      const cardSisaEl = document.querySelector('.transaksi-info-card.card-sisa');
+      if (cardSisaEl) cardSisaEl.classList.remove('is-lunas');
       if (sudahDibayar > 0 && infoPanel) {
         infoPanel.style.display = 'block';
         if (infoTotal) infoTotal.textContent = 'Seikhlasnya';
