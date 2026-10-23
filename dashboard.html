@@ -2331,6 +2331,32 @@
               <label>Nama Santri</label>
               <input type="text" id="transaksi_nama_santri" readonly style="background: var(--gray-100); cursor: not-allowed;">
             </div>
+            <!-- Info Ringkasan Pembayaran Santri -->
+            <div id="transaksiInfoPembayaran" style="grid-column: 1 / -1; display: none; background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); border: 1.5px solid #A5B4FC; border-radius: 12px; padding: 14px 16px; margin-bottom: 2px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                <div style="width: 28px; height: 28px; background: #4F46E5; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="15" height="15"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                </div>
+                <span style="font-size: 0.82rem; font-weight: 700; color: #3730A3;">Ringkasan Pembayaran</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                <div style="background: white; border-radius: 8px; padding: 10px 12px; text-align: center; border: 1px solid #C7D2FE;">
+                  <div style="font-size: 0.7rem; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Total Tagihan</div>
+                  <div id="infoTotalTagihan" style="font-size: 0.95rem; font-weight: 800; color: #1E3A8A;">Rp 0</div>
+                </div>
+                <div style="background: white; border-radius: 8px; padding: 10px 12px; text-align: center; border: 1px solid #BBF7D0;">
+                  <div style="font-size: 0.7rem; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Sudah Dibayar</div>
+                  <div id="infoSudahDibayar" style="font-size: 0.95rem; font-weight: 800; color: #059669;">Rp 0</div>
+                </div>
+                <div style="background: white; border-radius: 8px; padding: 10px 12px; text-align: center; border: 1px solid #FECACA;">
+                  <div style="font-size: 0.7rem; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Sisa Tagihan</div>
+                  <div id="infoSisaTagihan" style="font-size: 0.95rem; font-weight: 800; color: #DC2626;">Rp 0</div>
+                </div>
+              </div>
+              <div id="infoStatusLunas" style="display: none; margin-top: 8px; text-align: center; padding: 6px 12px; background: #D1FAE5; border-radius: 8px; border: 1px solid #6EE7B7;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: #065F46;">✅ Tagihan sudah LUNAS</span>
+              </div>
+            </div>
             <div class="form-group" style="grid-column: 1 / -1;">
               <label for="transaksi_nominal" id="lbl_transaksi_nominal">Nominal Pembayaran (Rp) <span class="req">*</span></label>
               <input type="text" id="transaksi_nominal" inputmode="numeric" placeholder="Misal: 500.000" required oninput="formatRibuanInput(this)">
