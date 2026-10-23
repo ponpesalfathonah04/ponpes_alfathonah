@@ -793,6 +793,175 @@ body.role-bendahara .menu-group:not([data-group="utama"]):not([data-group="keuan
   border-color: #F87171 !important;
 }
 
+/* ===== TRANSAKSI INFO PEMBAYARAN ===== */
+.transaksi-info-pembayaran {
+  background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+  border: 1.5px solid #A5B4FC;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 6px;
+  box-sizing: border-box;
+  width: 100%;
+}
+.transaksi-info-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.transaksi-info-icon {
+  width: 26px;
+  height: 26px;
+  background: #4F46E5;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.transaksi-info-header span {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #3730A3;
+}
+.transaksi-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.transaksi-info-card {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 8px 6px;
+  text-align: center;
+  box-sizing: border-box;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.transaksi-info-card.card-total {
+  border: 1px solid #C7D2FE;
+}
+.transaksi-info-card.card-sudah {
+  border: 1px solid #BBF7D0;
+}
+.transaksi-info-card.card-sisa {
+  border: 1px solid #FECACA;
+  background: #FEF2F2;
+}
+.transaksi-info-card.card-sisa.is-lunas {
+  border: 1px solid #BBF7D0;
+  background: #F0FDF4;
+}
+.transaksi-info-label {
+  font-size: 0.68rem;
+  color: #6B7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 3px;
+  line-height: 1.2;
+}
+.transaksi-info-val {
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1.25;
+  word-break: break-word;
+}
+.transaksi-info-val.val-total {
+  color: #1E3A8A;
+}
+.transaksi-info-val.val-sudah {
+  color: #059669;
+}
+.transaksi-info-val.val-sisa {
+  color: #DC2626;
+}
+.transaksi-info-card.card-sisa.is-lunas .transaksi-info-val.val-sisa {
+  color: #059669;
+}
+.transaksi-info-lunas {
+  margin-top: 8px;
+  text-align: center;
+  padding: 6px 12px;
+  background: #D1FAE5;
+  border-radius: 8px;
+  border: 1px solid #6EE7B7;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #065F46;
+}
+
+/* ===== RESPONSIVE MODAL & RINGKASAN PEMBAYARAN (MOBILE) ===== */
+@media (max-width: 520px) {
+  .modal-overlay {
+    padding: 12px 10px !important;
+    align-items: center !important;
+  }
+  .modal {
+    padding: 20px 14px !important;
+    border-radius: 16px !important;
+    margin: 10px auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .modal-close {
+    top: 14px !important;
+    right: 14px !important;
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .modal-header {
+    margin-bottom: 16px !important;
+    padding-bottom: 10px !important;
+  }
+  .modal-header h3 {
+    font-size: 1.05rem !important;
+    padding-right: 32px !important;
+    line-height: 1.3 !important;
+  }
+  .transaksi-info-pembayaran {
+    padding: 10px 10px;
+    border-radius: 10px;
+  }
+  .transaksi-info-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .transaksi-info-grid .card-sisa {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    text-align: left;
+  }
+  .transaksi-info-grid .card-sisa .transaksi-info-label {
+    margin-bottom: 0;
+    font-size: 0.72rem;
+  }
+  .transaksi-info-grid .card-sisa .transaksi-info-val {
+    font-size: 0.92rem;
+    text-align: right;
+  }
+  .transaksi-info-card {
+    padding: 8px 4px;
+  }
+  .transaksi-info-label {
+    font-size: 0.64rem;
+  }
+  .transaksi-info-val {
+    font-size: 0.82rem;
+  }
+}
+
 /* ===== TOMBOL AKSI TABEL (HORIZONTAL) ===== */
 .action-btns,
 td .action-btns,
